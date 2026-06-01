@@ -1,12 +1,13 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
-  Users, Package, Archive, MapPin, CalendarDays, Megaphone, LogOut, Menu, X,
+  LayoutDashboard, Users, Package, Archive, MapPin, CalendarDays, Megaphone, LogOut, Menu, X,
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
+  { to: '/',                        label: 'Inicio',                icon: LayoutDashboard },
   { to: '/socios',                  label: 'Socios',                icon: Users },
   { to: '/materiales/socios',       label: 'Materiales socios',     icon: Package },
   { to: '/materiales/asociacion',   label: 'Materiales asociación', icon: Archive },

@@ -13,6 +13,7 @@ import LugaresPage from '@/pages/LugaresPage'
 import EventosPage from '@/pages/EventosPage'
 import EventoDetailPage from '@/pages/EventoDetailPage'
 import PublicacionesPage from '@/pages/PublicacionesPage'
+import DashboardPage from '@/pages/DashboardPage'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -33,7 +34,7 @@ export default function App() {
                 </RequireAuth>
               }
             >
-              <Route index element={<Navigate to="/socios" replace />} />
+              <Route index element={<DashboardPage />} />
               <Route path="/socios" element={<SociosPage />} />
               <Route path="/socios/:id" element={<SocioDetailPage />} />
               <Route path="/materiales/socios" element={<MaterialesSocioPage />} />
