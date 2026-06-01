@@ -1,0 +1,12 @@
+{
+  "name": "asociacion-tentaculos-backend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "init-db": "node scripts/init-db.mjs"
+  },
+  "dependencies": {
+    "node-appwrite": "^14.0.0"
+  }
+}
