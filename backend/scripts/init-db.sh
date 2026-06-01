@@ -16,7 +16,8 @@
 set -euo pipefail
 
 DB="tentaculos"
-PERMS='read("users")' 'create("users")' 'update("users")' 'delete("users")'
+# Permisos como array de bash (sin eval, sin riesgo de interpretación)
+PERMS=('read("users")' 'create("users")' 'update("users")' 'delete("users")')
 
 # Colores
 GREEN='\033[0;32m'
@@ -24,20 +25,24 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-ok()   { echo -e "  ${GREEN}✓${NC} $1"; }
-warn() { echo -e "  ${YELLOW}·${NC} $1 (ya existe, se omite)"; }
+ok()   { echo -e "  ${GREEN}✓${NC} $*"; }
+warn() { echo -e "  ${YELLOW}·${NC} $* (ya existe, se omite)"; }
 step() { echo -e "\n${YELLOW}▶ $1${NC}"; }
 
-# Wrapper: ignora el error 409 (ya existe), falla en otros errores
+# Wrapper: ignora error 409 (ya existe), falla en cualquier otro error.
+# Usa "$@" directamente — sin eval — para que los paréntesis de los
+# permisos no sean interpretados por bash.
 run() {
+  local label="${*: -1}"   # último argumento como etiqueta
   local out
-  if out=$(eval "$@" 2>&1); then
-    ok "$(echo "$@" | grep -o -- '--key [^ ]*\|--collection-id [^ ]*\|--database-id [^ ]*' | head -1)"
+  if out=$("$@" 2>&1); then
+    ok "$label"
   else
-    if echo "$out" | grep -q "409\|already exist\|duplicate"; then
-      warn "$(echo "$@" | grep -o -- '--key [^ ]*\|--collection-id [^ ]*' | head -1)"
+    if echo "$out" | grep -qi "409\|already exist\|duplicate"; then
+      warn "$label"
     else
-      echo -e "  ${RED}✗ Error:${NC} $out"
+      echo -e "  ${RED}✗${NC} $label"
+      echo -e "  ${RED}  $out${NC}"
       return 1
     fi
   fi
@@ -60,7 +65,7 @@ run appwrite databases create-collection \
   --database-id "$DB" \
   --collection-id socios \
   --name "Socios" \
-  --permissions 'read("users")' 'create("users")' 'update("users")' 'delete("users")' \
+  --permissions "${PERMS[@]}" \
   --document-security false
 
 w; run appwrite databases create-string-attribute   --database-id "$DB" --collection-id socios --key nombre      --size 100  --required true
@@ -85,7 +90,7 @@ run appwrite databases create-collection \
   --database-id "$DB" \
   --collection-id materiales_socio \
   --name "Materiales de socios" \
-  --permissions 'read("users")' 'create("users")' 'update("users")' 'delete("users")' \
+  --permissions "${PERMS[@]}" \
   --document-security false
 
 w; run appwrite databases create-string-attribute   --database-id "$DB" --collection-id materiales_socio --key socio_id             --size 36  --required true
@@ -105,7 +110,7 @@ run appwrite databases create-collection \
   --database-id "$DB" \
   --collection-id materiales_asociacion \
   --name "Materiales de la asociación" \
-  --permissions 'read("users")' 'create("users")' 'update("users")' 'delete("users")' \
+  --permissions "${PERMS[@]}" \
   --document-security false
 
 w; run appwrite databases create-string-attribute   --database-id "$DB" --collection-id materiales_asociacion --key nombre             --size 200 --required true
@@ -127,7 +132,7 @@ run appwrite databases create-collection \
   --database-id "$DB" \
   --collection-id lugares \
   --name "Lugares" \
-  --permissions 'read("users")' 'create("users")' 'update("users")' 'delete("users")' \
+  --permissions "${PERMS[@]}" \
   --document-security false
 
 w; run appwrite databases create-string-attribute   --database-id "$DB" --collection-id lugares --key nombre    --size 150 --required true
@@ -147,7 +152,7 @@ run appwrite databases create-collection \
   --database-id "$DB" \
   --collection-id eventos \
   --name "Eventos" \
-  --permissions 'read("users")' 'create("users")' 'update("users")' 'delete("users")' \
+  --permissions "${PERMS[@]}" \
   --document-security false
 
 w; run appwrite databases create-string-attribute   --database-id "$DB" --collection-id eventos --key titulo          --size 200 --required true
@@ -172,7 +177,7 @@ run appwrite databases create-collection \
   --database-id "$DB" \
   --collection-id publicaciones \
   --name "Publicaciones" \
-  --permissions 'read("users")' 'create("users")' 'update("users")' 'delete("users")' \
+  --permissions "${PERMS[@]}" \
   --document-security false
 
 w; run appwrite databases create-string-attribute   --database-id "$DB" --collection-id publicaciones --key titulo             --size 200  --required true
