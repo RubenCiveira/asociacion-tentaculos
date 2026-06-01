@@ -11,6 +11,8 @@ import SocioDetailPage from '@/pages/SocioDetailPage'
 import MaterialesSocioPage from '@/pages/MaterialesSocioPage'
 import MaterialesAsociacionPage from '@/pages/MaterialesAsociacionPage'
 import LugaresPage from '@/pages/LugaresPage'
+import EventosPage from '@/pages/EventosPage'
+import EventoDetailPage from '@/pages/EventoDetailPage'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -37,7 +39,8 @@ export default function App() {
               <Route path="/materiales/socios" element={<MaterialesSocioPage />} />
               <Route path="/materiales/asociacion" element={<MaterialesAsociacionPage />} />
               <Route path="/lugares" element={<LugaresPage />} />
-              <Route path="/eventos" element={<PlaceholderPage title="Eventos" description="Calendario de partidas y actividades" />} />
+              <Route path="/eventos" element={<EventosPage />} />
+              <Route path="/eventos/:id" element={<EventoDetailPage />} />
               <Route path="/publicaciones" element={<PlaceholderPage title="Publicaciones" description="Gestor de contenido para redes sociales" />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
