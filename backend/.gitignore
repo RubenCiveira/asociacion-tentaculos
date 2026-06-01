@@ -1,0 +1,17 @@
+# Appwrite CLI session (contains auth tokens)
+appwrite/appwrite.json
+
+# Environment / secrets
+.env
+.env.local
+*.env
+
+# Node (for Appwrite Functions if used)
+node_modules/
+
+# Appwrite function build artifacts
+.appwrite/
+code.tar.gz
+
+# OS
+.DS_Store
