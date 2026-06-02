@@ -34,8 +34,8 @@ jobs:
         working-directory: frontend
         env:
           VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || format('/{0}/', github.event.repository.name) }}
-          VITE_APPWRITE_ENDPOINT: ${{ vars.VITE_APPWRITE_ENDPOINT }}
-          VITE_APPWRITE_PROJECT_ID: ${{ vars.VITE_APPWRITE_PROJECT_ID }}
+          VITE_APPWRITE_ENDPOINT: https://appwrite.civeira.net/v1
+          VITE_APPWRITE_PROJECT_ID: 6a1c8e6400066368d20b
         run: npm run build
 
       - name: Deploy to gh-pages branch
