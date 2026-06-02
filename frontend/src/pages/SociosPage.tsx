@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { format, parseISO } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { UserPlus, Users } from 'lucide-react'
+import { UserPlus, Users, UserCheck, UserX } from 'lucide-react'
 import { Table } from '@/components/ui/Table'
 import { Pagination } from '@/components/ui/Pagination'
 import { SearchBar } from '@/components/ui/SearchBar'
@@ -81,6 +81,21 @@ export default function SociosPage() {
       header: 'Estado',
       render: (s: Socio) => (
         <Badge label={s.activo ? 'Activo' : 'Baja'} variant={s.activo ? 'green' : 'gray'} dot />
+      ),
+    },
+    {
+      key: 'cuenta',
+      header: 'Cuenta',
+      render: (s: Socio) => s.user_id ? (
+        <span className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400">
+          <UserCheck size={14} />
+          Vinculada
+        </span>
+      ) : (
+        <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500">
+          <UserX size={14} />
+          Sin cuenta
+        </span>
       ),
     },
     {

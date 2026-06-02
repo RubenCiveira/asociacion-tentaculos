@@ -6,7 +6,10 @@ import { ArrowLeft, Pencil, Package, CalendarDays } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Dialog } from '@/components/ui/Dialog'
 import { SocioForm } from '@/components/socios/SocioForm'
+import { CuentaAcceso } from '@/components/socios/CuentaAcceso'
 import { useSocio, useUpdateSocio } from '@/hooks/useSocios'
+import { useAuth } from '@/contexts/AuthContext'
+import { isAdmin } from '@/lib/roles'
 import { useMaterialesSocio } from '@/hooks/useMaterialesSocio'
 import { useEventos } from '@/hooks/useEventos'
 import { TIPO_MATERIAL_LABELS, TIPO_JUEGO_LABELS, ESTADO_EVENTO_LABELS } from '@/types'
@@ -30,11 +33,15 @@ function InfoRow({ label, value }: { label: string; value?: string }) {
   )
 }
 
+
+
 export default function SocioDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
 
+  const { user } = useAuth()
+  const admin = isAdmin(user)
   const { data: socio, isLoading } = useSocio(id!)
   const { data: materialesData } = useMaterialesSocio({ socioId: id })
   const { data: eventosData } = useEventos()
@@ -173,6 +180,9 @@ export default function SocioDetailPage() {
           </ul>
         )}
       </div>
+
+      {/* Cuenta de acceso — solo admins */}
+      {admin && <CuentaAcceso socio={socio} />}
 
       {/* Modal editar */}
       <Dialog open={editing} onClose={() => setEditing(false)} title="Editar socio" size="lg">

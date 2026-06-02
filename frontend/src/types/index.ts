@@ -9,6 +9,7 @@ export interface Socio extends Models.Document {
   email?: string
   telefono?: string
   notas?: string
+  user_id?: string | null
 }
 
 export type TipoMaterial = 'juego_mesa' | 'rol' | 'wargame' | 'accesorio' | 'otro'
