@@ -7,7 +7,7 @@ const has = (user: User | null, label: string) =>
 
 export const isAdmin          = (u: User | null) => has(u, 'admin')
 export const isSocio          = (u: User | null) => has(u, 'socio') || isAdmin(u)
-export const isGestorMaterial = (u: User | null) => has(u, 'gestor-material') || isAdmin(u)
+export const isGestorMaterial = (u: User | null) => has(u, 'gestorMaterial') || isAdmin(u)
 
 /** Cuenta con al menos un rol reconocido (no pendiente de validación). */
 export const isValidated = (u: User | null) => isSocio(u) || isAdmin(u)
