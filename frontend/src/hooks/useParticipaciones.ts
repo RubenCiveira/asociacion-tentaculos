@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Query } from 'appwrite'
+import { Query, ExecutionMethod } from 'appwrite'
 import { databases, functions, DB_ID, COLLECTIONS, FUNCTIONS } from '@/lib/appwrite'
 import { useToast } from '@/contexts/ToastContext'
 import type { Participacion, EstadoParticipacion } from '@/types'
@@ -81,7 +81,7 @@ async function callFunction(accion: 'inscribirse' | 'retirarse', eventoId: strin
     JSON.stringify({ accion, evento_id: eventoId }),
     false,
     '/',
-    'POST',
+    ExecutionMethod.POST,
     { 'Content-Type': 'application/json' },
   )
   // Appwrite siempre resuelve con 200 aunque la función devuelva un error interno.
