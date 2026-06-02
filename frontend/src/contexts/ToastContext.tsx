@@ -27,9 +27,9 @@ const ICONS: Record<ToastType, typeof CheckCircle> = {
 }
 
 const STYLES: Record<ToastType, string> = {
-  success: 'bg-white border-green-200 text-green-800',
-  error:   'bg-white border-red-200 text-red-800',
-  info:    'bg-white border-blue-200 text-blue-800',
+  success: 'bg-white dark:bg-gray-900 border-green-200 dark:border-green-800 text-green-800 dark:text-green-300',
+  error:   'bg-white dark:bg-gray-900 border-red-200 dark:border-red-800 text-red-800 dark:text-red-300',
+  info:    'bg-white dark:bg-gray-900 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300',
 }
 
 const ICON_STYLES: Record<ToastType, string> = {
@@ -51,7 +51,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: number) =
       <span className="flex-1">{toast.message}</span>
       <button
         onClick={() => onRemove(toast.id)}
-        className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+        className="flex-shrink-0 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
         aria-label="Cerrar"
       >
         <X size={15} />

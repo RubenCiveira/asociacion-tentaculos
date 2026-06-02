@@ -57,8 +57,8 @@ export default function EventosPage() {
     <div className="max-w-6xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Eventos</h2>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Eventos</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             {data ? `${data.total} eventos registrados` : 'Cargando…'}
           </p>
         </div>
@@ -79,20 +79,20 @@ export default function EventosPage() {
           />
           {selectedDate && (
             <button onClick={() => setSelectedDate(null)}
-              className="w-full text-xs text-gray-500 hover:text-gray-700 underline">
+              className="w-full text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 underline">
               Ver todos los eventos
             </button>
           )}
           <div className="space-y-2">
             <select value={filterEstado} onChange={e => setFilterEstado(e.target.value as EstadoEvento | '')}
-              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
+              className="w-full text-sm border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-400">
               <option value="">Todos los estados</option>
               {(Object.entries(ESTADO_EVENTO_LABELS) as [EstadoEvento, string][]).map(([v, l]) => (
                 <option key={v} value={v}>{l}</option>
               ))}
             </select>
             <select value={filterTipo} onChange={e => setFilterTipo(e.target.value as TipoJuego | '')}
-              className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
+              className="w-full text-sm border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-400">
               <option value="">Todos los tipos</option>
               {(Object.entries(TIPO_JUEGO_LABELS) as [TipoJuego, string][]).map(([v, l]) => (
                 <option key={v} value={v}>{l}</option>
@@ -105,7 +105,7 @@ export default function EventosPage() {
         <div>
           {isLoading ? (
             <div className="flex justify-center py-20">
-              <div className="w-8 h-8 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
+              <div className="w-8 h-8 border-4 border-brand-200 dark:border-brand-900 border-t-brand-600 rounded-full animate-spin" />
             </div>
           ) : filtered.length === 0 ? (
             <EmptyState icon={CalendarDays} title="Sin eventos"
@@ -116,22 +116,22 @@ export default function EventosPage() {
               {filtered.map(evento => (
                 <div key={evento.$id}
                   onClick={() => navigate(`/eventos/${evento.$id}`)}
-                  className="bg-white rounded-xl border border-gray-100 p-4 cursor-pointer hover:border-brand-200 hover:shadow-sm transition-all">
+                  className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 cursor-pointer hover:border-brand-200 dark:hover:border-brand-700 hover:shadow-sm transition-all">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="font-semibold text-gray-800 truncate">{evento.titulo}</p>
+                      <p className="font-semibold text-gray-800 dark:text-gray-100 truncate">{evento.titulo}</p>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-                        <span className="text-xs text-gray-500 flex items-center gap-1">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                           <CalendarDays size={12} />
                           {format(parseISO(evento.fecha_inicio), "d MMM yyyy 'a las' HH:mm", { locale: es })}
                         </span>
                         {evento.lugar_id && lugarMap.get(evento.lugar_id) && (
-                          <span className="text-xs text-gray-500 flex items-center gap-1">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                             <MapPin size={12} />
                             {lugarMap.get(evento.lugar_id)}
                           </span>
                         )}
-                        <span className="text-xs text-gray-500 flex items-center gap-1">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                           <Users size={12} />
                           {evento.asistentes.length}
                           {evento.max_jugadores ? `/${evento.max_jugadores}` : ''} asistentes
@@ -144,15 +144,15 @@ export default function EventosPage() {
                     </div>
                   </div>
                   {evento.descripcion && (
-                    <p className="text-xs text-gray-400 mt-2 line-clamp-2">{evento.descripcion}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 line-clamp-2">{evento.descripcion}</p>
                   )}
-                  <div className="flex gap-2 mt-3 pt-3 border-t border-gray-50" onClick={e => e.stopPropagation()}>
+                  <div className="flex gap-2 mt-3 pt-3 border-t border-gray-50 dark:border-gray-800" onClick={e => e.stopPropagation()}>
                     <button onClick={() => setEditing(evento)}
-                      className="text-xs px-2.5 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+                      className="text-xs px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
                       Editar
                     </button>
                     <button onClick={() => setDeleting(evento)}
-                      className="text-xs px-2.5 py-1 rounded-md bg-red-50 hover:bg-red-100 text-red-600 transition-colors">
+                      className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
                       Eliminar
                     </button>
                   </div>

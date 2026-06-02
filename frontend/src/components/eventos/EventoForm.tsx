@@ -152,27 +152,27 @@ export function EventoForm({ initial, onSubmit, onCancel, loading, isEdit }: Pro
 
       {/* Asistentes */}
       <FormField label={`Asistentes (${form.asistentes.length} seleccionados)`}>
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
-          <div className="p-2 border-b border-gray-100 flex items-center gap-2">
-            <Search size={14} className="text-gray-400" />
+        <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="p-2 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2 bg-white dark:bg-gray-900">
+            <Search size={14} className="text-gray-400 dark:text-gray-500" />
             <input value={socioSearch} onChange={e => setSocioSearch(e.target.value)}
               placeholder="Buscar socios…"
-              className="text-sm outline-none flex-1 text-gray-900 placeholder:text-gray-400" />
+              className="text-sm outline-none flex-1 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-transparent" />
             {socioSearch && (
               <button type="button" onClick={() => setSocioSearch('')}>
-                <X size={14} className="text-gray-400" />
+                <X size={14} className="text-gray-400 dark:text-gray-500" />
               </button>
             )}
           </div>
-          <div className="max-h-40 overflow-y-auto divide-y divide-gray-50">
+          <div className="max-h-40 overflow-y-auto divide-y divide-gray-50 dark:divide-gray-800 bg-white dark:bg-gray-900">
             {sociosFiltrados.length === 0 ? (
-              <p className="px-3 py-2 text-sm text-gray-400">Sin resultados</p>
+              <p className="px-3 py-2 text-sm text-gray-400 dark:text-gray-500">Sin resultados</p>
             ) : sociosFiltrados.map(s => (
-              <label key={s.$id} className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 cursor-pointer">
+              <label key={s.$id} className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
                 <input type="checkbox" className="rounded"
                   checked={form.asistentes.includes(s.$id)}
                   onChange={() => toggleAsistente(s.$id)} />
-                <span className="text-sm text-gray-800">{s.apellidos}, {s.nombre}</span>
+                <span className="text-sm text-gray-800 dark:text-gray-100">{s.apellidos}, {s.nombre}</span>
               </label>
             ))}
           </div>
@@ -198,7 +198,7 @@ export function EventoForm({ initial, onSubmit, onCancel, loading, isEdit }: Pro
 
       <div className="flex justify-end gap-3 pt-2">
         <button type="button" onClick={onCancel} disabled={loading}
-          className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50">
+          className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50">
           Cancelar
         </button>
         <button type="submit" disabled={loading}

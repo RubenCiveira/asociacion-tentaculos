@@ -16,10 +16,8 @@ export function Pagination({ page, total, pageSize, onChange }: PaginationProps)
   const to = Math.min(page * pageSize, total)
 
   return (
-    <div className="flex items-center justify-between px-1 py-3 text-sm text-gray-500">
-      <span>
-        {from}–{to} de {total}
-      </span>
+    <div className="flex items-center justify-between px-1 py-3 text-sm text-gray-500 dark:text-gray-400">
+      <span>{from}–{to} de {total}</span>
       <div className="flex items-center gap-1">
         <button
           onClick={() => onChange(page - 1)}
@@ -27,14 +25,14 @@ export function Pagination({ page, total, pageSize, onChange }: PaginationProps)
           className={cn(
             'p-1.5 rounded-lg transition-colors',
             page === 1
-              ? 'text-gray-300 cursor-not-allowed'
-              : 'hover:bg-gray-100 text-gray-500',
+              ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+              : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400',
           )}
           aria-label="Página anterior"
         >
           <ChevronLeft size={16} />
         </button>
-        <span className="px-2 font-medium text-gray-700">
+        <span className="px-2 font-medium text-gray-700 dark:text-gray-300">
           {page} / {totalPages}
         </span>
         <button
@@ -43,8 +41,8 @@ export function Pagination({ page, total, pageSize, onChange }: PaginationProps)
           className={cn(
             'p-1.5 rounded-lg transition-colors',
             page === totalPages
-              ? 'text-gray-300 cursor-not-allowed'
-              : 'hover:bg-gray-100 text-gray-500',
+              ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
+              : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400',
           )}
           aria-label="Página siguiente"
         >

@@ -34,7 +34,7 @@ export default function LugaresPage() {
 
   if (isLoading) return (
     <div className="flex justify-center py-20">
-      <div className="w-8 h-8 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-brand-200 dark:border-brand-900 border-t-brand-600 rounded-full animate-spin" />
     </div>
   )
 
@@ -42,8 +42,8 @@ export default function LugaresPage() {
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Lugares</h2>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Lugares</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             {data ? `${data.total} lugares registrados` : 'Cargando…'}
           </p>
         </div>
@@ -58,7 +58,7 @@ export default function LugaresPage() {
         <SearchBar value={search} onChange={setSearch} placeholder="Buscar por nombre o dirección…" className="flex-1" />
         <select value={filterActivo}
           onChange={e => setFilterActivo(e.target.value as typeof filterActivo)}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
+          className="text-sm border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-400">
           <option value="activos">Solo activos</option>
           <option value="inactivos">Solo inactivos</option>
           <option value="todos">Todos</option>
@@ -73,41 +73,41 @@ export default function LugaresPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filtered.map(lugar => (
             <div key={lugar.$id}
-              className="bg-white rounded-xl border border-gray-100 p-5 flex flex-col gap-3">
+              className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5 flex flex-col gap-3">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-800">{lugar.nombre}</h3>
-                  <p className="text-xs text-gray-400 mt-0.5">{TIPO_LUGAR_LABELS[lugar.tipo]}</p>
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-100">{lugar.nombre}</h3>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{TIPO_LUGAR_LABELS[lugar.tipo]}</p>
                 </div>
                 <Badge label={lugar.activo ? 'Activo' : 'Inactivo'}
                   variant={lugar.activo ? 'green' : 'gray'} dot />
               </div>
 
               {lugar.direccion && (
-                <p className="text-sm text-gray-600 flex items-start gap-1.5">
-                  <MapPin size={13} className="mt-0.5 flex-shrink-0 text-gray-400" />
+                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-1.5">
+                  <MapPin size={13} className="mt-0.5 flex-shrink-0 text-gray-400 dark:text-gray-500" />
                   {lugar.direccion}
                 </p>
               )}
 
               {lugar.capacidad && (
-                <p className="text-sm text-gray-600 flex items-center gap-1.5">
-                  <Users size={13} className="text-gray-400" />
+                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1.5">
+                  <Users size={13} className="text-gray-400 dark:text-gray-500" />
                   Hasta {lugar.capacidad} personas
                 </p>
               )}
 
               {lugar.notas && (
-                <p className="text-xs text-gray-400 italic">{lugar.notas}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 italic">{lugar.notas}</p>
               )}
 
-              <div className="flex gap-2 pt-1 border-t border-gray-50 mt-auto">
+              <div className="flex gap-2 pt-1 border-t border-gray-50 dark:border-gray-800 mt-auto">
                 <button onClick={() => setEditing(lugar)}
-                  className="text-xs px-3 py-1.5 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+                  className="text-xs px-3 py-1.5 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
                   Editar
                 </button>
                 <button onClick={() => setDeleting(lugar)}
-                  className="text-xs px-3 py-1.5 rounded-md bg-red-50 hover:bg-red-100 text-red-600 transition-colors">
+                  className="text-xs px-3 py-1.5 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
                   Eliminar
                 </button>
               </div>

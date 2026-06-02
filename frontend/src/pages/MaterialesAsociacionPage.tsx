@@ -65,15 +65,15 @@ export default function MaterialesAsociacionPage() {
       header: 'Material',
       render: (m: MaterialAsociacion) => (
         <div>
-          <p className="font-medium text-gray-800">{m.nombre}</p>
-          {m.ubicacion && <p className="text-xs text-gray-400">{m.ubicacion}</p>}
+          <p className="font-medium text-gray-800 dark:text-gray-100">{m.nombre}</p>
+          {m.ubicacion && <p className="text-xs text-gray-400 dark:text-gray-500">{m.ubicacion}</p>}
         </div>
       ),
     },
     {
       key: 'tipo',
       header: 'Tipo',
-      render: (m: MaterialAsociacion) => <span className="text-sm text-gray-600">{TIPO_MATERIAL_LABELS[m.tipo]}</span>,
+      render: (m: MaterialAsociacion) => <span className="text-sm text-gray-600 dark:text-gray-400">{TIPO_MATERIAL_LABELS[m.tipo]}</span>,
     },
     {
       key: 'estado',
@@ -86,7 +86,7 @@ export default function MaterialesAsociacionPage() {
       key: 'donado',
       header: 'Aportado por',
       render: (m: MaterialAsociacion) => (
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-gray-600 dark:text-gray-400">
           {m.donado_por ? socioMap.get(m.donado_por) ?? '—' : '—'}
         </span>
       ),
@@ -95,7 +95,7 @@ export default function MaterialesAsociacionPage() {
       key: 'fecha',
       header: 'Adquisición',
       render: (m: MaterialAsociacion) => (
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-gray-600 dark:text-gray-400">
           {m.fecha_adquisicion ? format(parseISO(m.fecha_adquisicion), 'd MMM yyyy', { locale: es }) : '—'}
         </span>
       ),
@@ -107,11 +107,11 @@ export default function MaterialesAsociacionPage() {
       render: (m: MaterialAsociacion) => (
         <div className="flex gap-2 justify-end" onClick={e => e.stopPropagation()}>
           <button onClick={() => setEditing(m)}
-            className="text-xs px-2.5 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+            className="text-xs px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
             Editar
           </button>
           <button onClick={() => setDeleting(m)}
-            className="text-xs px-2.5 py-1 rounded-md bg-red-50 hover:bg-red-100 text-red-600 transition-colors">
+            className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
             Eliminar
           </button>
         </div>
@@ -123,8 +123,8 @@ export default function MaterialesAsociacionPage() {
     <div className="max-w-5xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Materiales de la asociación</h2>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Materiales de la asociación</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             {data ? `${data.total} materiales registrados` : 'Cargando…'}
           </p>
         </div>
@@ -136,7 +136,7 @@ export default function MaterialesAsociacionPage() {
       </div>
 
       {perdidos > 0 && (
-        <div className="flex items-center gap-2 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+        <div className="flex items-center gap-2 mb-4 px-4 py-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-700 dark:text-red-400">
           <AlertTriangle size={16} className="flex-shrink-0" />
           {perdidos} material{perdidos > 1 ? 'es' : ''} marcado{perdidos > 1 ? 's' : ''} como perdido{perdidos > 1 ? 's' : ''}
         </div>
@@ -146,14 +146,14 @@ export default function MaterialesAsociacionPage() {
         <SearchBar value={search} onChange={v => { setSearch(v); setPage(1) }}
           placeholder="Buscar por nombre o ubicación…" className="flex-1" />
         <select value={filterTipo} onChange={e => { setFilterTipo(e.target.value); setPage(1) }}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
+          className="text-sm border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-400">
           <option value="">Todos los tipos</option>
           {Object.entries(TIPO_MATERIAL_LABELS).map(([v, l]) => (
             <option key={v} value={v}>{l}</option>
           ))}
         </select>
         <select value={filterEstado} onChange={e => { setFilterEstado(e.target.value); setPage(1) }}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
+          className="text-sm border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-400">
           <option value="">Todos los estados</option>
           {Object.entries(ESTADO_MATERIAL_LABELS).map(([v, l]) => (
             <option key={v} value={v}>{l}</option>

@@ -18,12 +18,8 @@ interface ComboboxBuscableProps {
 }
 
 export function ComboboxBuscable({
-  options,
-  value,
-  onChange,
-  placeholder = 'Selecciona…',
-  disabled,
-  error,
+  options, value, onChange,
+  placeholder = 'Selecciona…', disabled, error,
   emptyMessage = 'Sin resultados',
 }: ComboboxBuscableProps) {
   const [open, setOpen] = useState(false)
@@ -32,7 +28,6 @@ export function ComboboxBuscable({
   const inputRef = useRef<HTMLInputElement>(null)
 
   const selected = options.find(o => o.value === value)
-
   const filtered = query
     ? options.filter(o => o.label.toLowerCase().includes(query.toLowerCase()))
     : options
@@ -53,8 +48,7 @@ export function ComboboxBuscable({
   function handleKey(e: KeyboardEvent) {
     if (e.key === 'Escape') setOpen(false)
     if (e.key === 'Enter' && filtered.length === 1) {
-      onChange(filtered[0].value)
-      setOpen(false)
+      onChange(filtered[0].value); setOpen(false)
     }
   }
 
@@ -65,48 +59,48 @@ export function ComboboxBuscable({
         disabled={disabled}
         onClick={() => setOpen(o => !o)}
         className={cn(
-          'w-full flex items-center justify-between rounded-lg border px-3.5 py-2.5 text-sm bg-white text-left',
+          'w-full flex items-center justify-between rounded-lg border px-3.5 py-2.5 text-sm text-left',
+          'bg-white dark:bg-gray-800',
           'focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent',
-          'disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed',
-          error ? 'border-red-300' : 'border-gray-200',
+          'disabled:bg-gray-50 dark:disabled:bg-gray-900 disabled:text-gray-400 disabled:cursor-not-allowed',
+          error ? 'border-red-300 dark:border-red-700' : 'border-gray-200 dark:border-gray-600',
         )}
       >
-        <span className={selected ? 'text-gray-900' : 'text-gray-400'}>
+        <span className={selected ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500'}>
           {selected ? selected.label : placeholder}
         </span>
         <div className="flex items-center gap-1">
           {value && (
             <span
-              role="button"
-              tabIndex={0}
+              role="button" tabIndex={0}
               onClick={e => { e.stopPropagation(); onChange('') }}
               onKeyDown={e => e.key === 'Enter' && onChange('')}
-              className="text-gray-400 hover:text-gray-600 p-0.5 rounded"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-0.5 rounded"
               aria-label="Limpiar"
             >
               <X size={14} />
             </span>
           )}
-          <ChevronDown size={16} className="text-gray-400" />
+          <ChevronDown size={16} className="text-gray-400 dark:text-gray-500" />
         </div>
       </button>
 
       {open && (
-        <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
-          <div className="p-2 border-b border-gray-100 flex items-center gap-2">
-            <Search size={14} className="text-gray-400 flex-shrink-0" />
+        <div className="absolute z-20 w-full mt-1 rounded-xl shadow-lg overflow-hidden border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
+          <div className="p-2 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
+            <Search size={14} className="text-gray-400 dark:text-gray-500 flex-shrink-0" />
             <input
               ref={inputRef}
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={handleKey}
               placeholder="Buscar…"
-              className="text-sm outline-none flex-1 text-gray-900 placeholder:text-gray-400"
+              className="text-sm outline-none flex-1 bg-transparent text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
             />
           </div>
           <ul className="max-h-52 overflow-y-auto py-1">
             {filtered.length === 0 ? (
-              <li className="px-3 py-2 text-sm text-gray-400">{emptyMessage}</li>
+              <li className="px-3 py-2 text-sm text-gray-400 dark:text-gray-500">{emptyMessage}</li>
             ) : (
               filtered.map(opt => (
                 <li key={opt.value}>
@@ -114,8 +108,10 @@ export function ComboboxBuscable({
                     type="button"
                     onClick={() => { onChange(opt.value); setOpen(false) }}
                     className={cn(
-                      'w-full text-left px-3 py-2 text-sm hover:bg-gray-50 transition-colors',
-                      opt.value === value && 'bg-brand-50 text-brand-700 font-medium',
+                      'w-full text-left px-3 py-2 text-sm transition-colors',
+                      opt.value === value
+                        ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-300 font-medium'
+                        : 'text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700',
                     )}
                   >
                     {opt.label}

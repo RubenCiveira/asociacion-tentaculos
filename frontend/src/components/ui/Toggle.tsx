@@ -26,20 +26,16 @@ export function Toggle({ checked, onChange, label, disabled, id }: ToggleProps) 
           disabled={disabled}
           onChange={e => onChange(e.target.checked)}
         />
-        <div
-          className={cn(
-            'w-10 h-6 rounded-full transition-colors duration-200',
-            checked ? 'bg-brand-600' : 'bg-gray-200',
-          )}
-        />
-        <div
-          className={cn(
-            'absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200',
-            checked && 'translate-x-4',
-          )}
-        />
+        <div className={cn(
+          'w-10 h-6 rounded-full transition-colors duration-200',
+          checked ? 'bg-brand-600' : 'bg-gray-200 dark:bg-gray-700',
+        )} />
+        <div className={cn(
+          'absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200',
+          checked && 'translate-x-4',
+        )} />
       </div>
-      {label && <span className="text-sm text-gray-700">{label}</span>}
+      {label && <span className="text-sm text-gray-700 dark:text-gray-300">{label}</span>}
     </label>
   )
 }

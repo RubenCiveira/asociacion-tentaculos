@@ -29,15 +29,15 @@ function StatCard({ icon: Icon, label, value, sub, color, onClick }: {
   return (
     <button
       onClick={onClick}
-      className="bg-white rounded-xl border border-gray-100 p-5 flex items-center gap-4 text-left w-full hover:border-brand-200 hover:shadow-sm transition-all"
+      className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5 flex items-center gap-4 text-left w-full hover:border-brand-200 dark:hover:border-brand-700 hover:shadow-sm transition-all"
     >
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
         <Icon size={22} />
       </div>
       <div className="min-w-0">
-        <p className="text-2xl font-bold text-gray-800">{value}</p>
-        <p className="text-sm font-medium text-gray-600">{label}</p>
-        {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+        <p className="text-2xl font-bold text-gray-800 dark:text-gray-100">{value}</p>
+        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{label}</p>
+        {sub && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{sub}</p>}
       </div>
     </button>
   )
@@ -71,8 +71,8 @@ export default function DashboardPage() {
   return (
     <div className="max-w-4xl space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-800">Panel de gestión</h2>
-        <p className="text-sm text-gray-500 mt-0.5">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Panel de gestión</h2>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
           {format(ahora, "EEEE, d 'de' MMMM yyyy", { locale: es })}
         </p>
       </div>
@@ -98,30 +98,30 @@ export default function DashboardPage() {
         <StatCard
           icon={Megaphone} label="Publicaciones listas" value={publicacionesListas}
           sub={publicacionesListas > 0 ? 'Pendientes de publicar' : 'Sin contenido pendiente'}
-          color={publicacionesListas > 0 ? 'bg-yellow-50 text-yellow-600' : 'bg-gray-50 text-gray-400'}
+          color={publicacionesListas > 0 ? 'bg-yellow-50 text-yellow-600' : 'bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500'}
           onClick={() => navigate('/publicaciones')}
         />
       </div>
 
       {/* Próximo evento */}
       {proximoEvento && (
-        <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4 flex items-center gap-2">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5">
+          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4 flex items-center gap-2">
             <CalendarDays size={14} />
             Próximo evento
           </h3>
           <div
             onClick={() => navigate(`/eventos/${proximoEvento.$id}`)}
-            className="cursor-pointer hover:bg-gray-50 rounded-lg p-3 -mx-3 transition-colors"
+            className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg p-3 -mx-3 transition-colors"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="font-semibold text-gray-800">{proximoEvento.titulo}</p>
-                <p className="text-sm text-gray-500 mt-1 flex items-center gap-1.5">
+                <p className="font-semibold text-gray-800 dark:text-gray-100">{proximoEvento.titulo}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1.5">
                   <CalendarDays size={13} />
                   {format(parseISO(proximoEvento.fecha_inicio), "EEEE d MMM 'a las' HH:mm", { locale: es })}
                 </p>
-                <p className="text-sm text-gray-500 mt-0.5 flex items-center gap-1.5">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 flex items-center gap-1.5">
                   <Users size={13} />
                   {proximoEvento.asistentes.length} asistentes confirmados
                   {proximoEvento.max_jugadores ? ` de ${proximoEvento.max_jugadores}` : ''}
@@ -139,18 +139,18 @@ export default function DashboardPage() {
 
       {/* Alertas */}
       {materialesProblema > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 flex items-start gap-3">
           <AlertTriangle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-red-700">
+            <p className="text-sm font-medium text-red-700 dark:text-red-400">
               {materialesProblema} material{materialesProblema > 1 ? 'es' : ''} con incidencias
             </p>
-            <p className="text-xs text-red-600 mt-0.5">
+            <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">
               Hay materiales marcados como deteriorados o perdidos en el inventario de la asociación.
             </p>
             <button
               onClick={() => navigate('/materiales/asociacion')}
-              className="text-xs text-red-700 font-medium underline mt-1"
+              className="text-xs text-red-700 dark:text-red-400 font-medium underline mt-1"
             >
               Revisar inventario →
             </button>
@@ -160,7 +160,7 @@ export default function DashboardPage() {
 
       {/* Accesos rápidos */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Accesos rápidos</h3>
+        <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Accesos rápidos</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {[
             { icon: Users, label: 'Socios', to: '/socios', color: 'text-brand-600' },
@@ -171,9 +171,9 @@ export default function DashboardPage() {
             { icon: Megaphone, label: 'Publicaciones', to: '/publicaciones', color: 'text-pink-600' },
           ].map(({ icon: Icon, label, to, color }) => (
             <button key={to} onClick={() => navigate(to)}
-              className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3 hover:border-brand-200 hover:shadow-sm transition-all text-left">
+              className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 flex items-center gap-3 hover:border-brand-200 dark:hover:border-brand-700 hover:shadow-sm transition-all text-left">
               <Icon size={18} className={color} />
-              <span className="text-sm font-medium text-gray-700">{label}</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
             </button>
           ))}
         </div>

@@ -17,24 +17,17 @@ interface TableProps<T> {
   loading?: boolean
 }
 
-export function Table<T>({
-  columns,
-  rows,
-  rowKey,
-  onRowClick,
-  emptyState,
-  loading,
-}: TableProps<T>) {
+export function Table<T>({ columns, rows, rowKey, onRowClick, emptyState, loading }: TableProps<T>) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-100">
+    <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-700">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-gray-50 border-b border-gray-100">
+          <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
             {columns.map(col => (
               <th
                 key={col.key}
                 className={cn(
-                  'text-left px-4 py-3 font-medium text-gray-500 whitespace-nowrap',
+                  'text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap',
                   col.className,
                 )}
               >
@@ -43,7 +36,7 @@ export function Table<T>({
             ))}
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-50">
+        <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-50 dark:divide-gray-800">
           {loading ? (
             <tr>
               <td colSpan={columns.length} className="px-4 py-10 text-center">
@@ -54,7 +47,7 @@ export function Table<T>({
             </tr>
           ) : rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="px-4 py-10 text-center text-gray-400">
+              <td colSpan={columns.length} className="px-4 py-10 text-center text-gray-400 dark:text-gray-500">
                 {emptyState ?? 'Sin resultados'}
               </td>
             </tr>
@@ -65,7 +58,7 @@ export function Table<T>({
                 onClick={() => onRowClick?.(row)}
                 className={cn(
                   'transition-colors',
-                  onRowClick && 'cursor-pointer hover:bg-gray-50',
+                  onRowClick && 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800',
                 )}
               >
                 {columns.map(col => (

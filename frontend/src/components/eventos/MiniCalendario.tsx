@@ -49,16 +49,16 @@ export function MiniCalendario({ eventos, selectedDate, onSelectDate }: Props) {
   const DOW = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-4 select-none">
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 select-none">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <button onClick={prev} className="p-1 rounded hover:bg-gray-100 text-gray-500">
+        <button onClick={prev} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400">
           <ChevronLeft size={16} />
         </button>
-        <span className="text-sm font-semibold text-gray-700 capitalize">
+        <span className="text-sm font-semibold text-gray-700 dark:text-gray-200 capitalize">
           {format(cursor, 'MMMM yyyy', { locale: es })}
         </span>
-        <button onClick={next} className="p-1 rounded hover:bg-gray-100 text-gray-500">
+        <button onClick={next} className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400">
           <ChevronRight size={16} />
         </button>
       </div>
@@ -66,7 +66,7 @@ export function MiniCalendario({ eventos, selectedDate, onSelectDate }: Props) {
       {/* Days of week */}
       <div className="grid grid-cols-7 mb-1">
         {DOW.map(d => (
-          <div key={d} className="text-center text-xs font-medium text-gray-400 py-1">{d}</div>
+          <div key={d} className="text-center text-xs font-medium text-gray-400 dark:text-gray-500 py-1">{d}</div>
         ))}
       </div>
 
@@ -86,10 +86,10 @@ export function MiniCalendario({ eventos, selectedDate, onSelectDate }: Props) {
                 onClick={() => onSelectDate(day)}
                 className={cn(
                   'flex flex-col items-center py-1 rounded-lg transition-colors',
-                  inMonth ? 'text-gray-700' : 'text-gray-300',
-                  isSelected && 'bg-brand-600 text-white',
+                  inMonth ? 'text-gray-700 dark:text-gray-300' : 'text-gray-300 dark:text-gray-600',
+                  isSelected && 'bg-brand-600 text-white dark:text-white',
                   !isSelected && today && 'font-bold text-brand-600',
-                  !isSelected && inMonth && 'hover:bg-gray-100',
+                  !isSelected && inMonth && 'hover:bg-gray-100 dark:hover:bg-gray-800',
                 )}
               >
                 <span className="text-xs leading-5">{format(day, 'd')}</span>

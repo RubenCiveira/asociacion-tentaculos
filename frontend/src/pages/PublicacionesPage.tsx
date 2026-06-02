@@ -27,31 +27,31 @@ function PublicacionCard({ pub, onEdit, onDelete }: {
   onDelete: () => void
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-4 flex flex-col gap-3">
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 flex flex-col gap-3">
       <div className="flex items-start justify-between gap-2">
-        <p className="font-medium text-gray-800 text-sm leading-snug">{pub.titulo}</p>
+        <p className="font-medium text-gray-800 dark:text-gray-100 text-sm leading-snug">{pub.titulo}</p>
         <Badge label={ESTADO_PUBLICACION_LABELS[pub.estado]} variant={ESTADO_VARIANT[pub.estado]} dot />
       </div>
-      <p className="text-xs text-gray-500 line-clamp-3">{pub.contenido}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-3">{pub.contenido}</p>
       <div className="flex flex-wrap gap-1">
         {pub.redes.map(red => (
-          <span key={red} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
+          <span key={red} className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full">
             {RED_SOCIAL_LABELS[red as RedSocial]}
           </span>
         ))}
       </div>
       {pub.fecha_publicacion && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-gray-400 dark:text-gray-500">
           {format(parseISO(pub.fecha_publicacion), 'd MMM yyyy', { locale: es })}
         </p>
       )}
-      <div className="flex gap-2 pt-2 border-t border-gray-50">
+      <div className="flex gap-2 pt-2 border-t border-gray-50 dark:border-gray-800">
         <button onClick={onEdit}
-          className="text-xs px-2.5 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+          className="text-xs px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
           Editar
         </button>
         <button onClick={onDelete}
-          className="text-xs px-2.5 py-1 rounded-md bg-red-50 hover:bg-red-100 text-red-600 transition-colors">
+          className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
           Eliminar
         </button>
       </div>
@@ -98,7 +98,7 @@ export default function PublicacionesPage() {
 
   if (isLoading) return (
     <div className="flex justify-center py-20">
-      <div className="w-8 h-8 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-brand-200 dark:border-brand-900 border-t-brand-600 rounded-full animate-spin" />
     </div>
   )
 
@@ -106,19 +106,19 @@ export default function PublicacionesPage() {
     <div className="max-w-6xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">Publicaciones</h2>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Publicaciones</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             {data ? `${data.total} publicaciones` : 'Cargando…'}
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
             <button onClick={() => setView('kanban')}
-              className={`p-1.5 rounded-md transition-colors ${view === 'kanban' ? 'bg-white shadow-sm text-gray-700' : 'text-gray-400'}`}>
+              className={`p-1.5 rounded-md transition-colors ${view === 'kanban' ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-700 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'}`}>
               <LayoutGrid size={16} />
             </button>
             <button onClick={() => setView('lista')}
-              className={`p-1.5 rounded-md transition-colors ${view === 'lista' ? 'bg-white shadow-sm text-gray-700' : 'text-gray-400'}`}>
+              className={`p-1.5 rounded-md transition-colors ${view === 'lista' ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-700 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'}`}>
               <List size={16} />
             </button>
           </div>
@@ -133,7 +133,7 @@ export default function PublicacionesPage() {
       <div className="flex gap-3 mb-6">
         <SearchBar value={search} onChange={setSearch} placeholder="Buscar por título o contenido…" className="flex-1" />
         <select value={filterRed} onChange={e => setFilterRed(e.target.value as RedSocial | '')}
-          className="text-sm border border-gray-200 rounded-lg px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-brand-400">
+          className="text-sm border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 bg-white dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-brand-400">
           <option value="">Todas las redes</option>
           {(Object.entries(RED_SOCIAL_LABELS) as [RedSocial, string][]).map(([v, l]) => (
             <option key={v} value={v}>{l}</option>
@@ -152,11 +152,11 @@ export default function PublicacionesPage() {
             <div key={estado}>
               <div className="flex items-center gap-2 mb-3">
                 <Badge label={ESTADO_PUBLICACION_LABELS[estado]} variant={ESTADO_VARIANT[estado]} dot />
-                <span className="text-sm text-gray-400 font-medium">{byEstado[estado].length}</span>
+                <span className="text-sm text-gray-400 dark:text-gray-500 font-medium">{byEstado[estado].length}</span>
               </div>
               <div className="space-y-3">
                 {byEstado[estado].length === 0 ? (
-                  <div className="rounded-xl border-2 border-dashed border-gray-100 h-24 flex items-center justify-center text-xs text-gray-400">
+                  <div className="rounded-xl border-2 border-dashed border-gray-100 dark:border-gray-800 h-24 flex items-center justify-center text-xs text-gray-400 dark:text-gray-600">
                     Vacío
                   </div>
                 ) : (
@@ -175,31 +175,31 @@ export default function PublicacionesPage() {
         <div className="space-y-2">
           {filtered.map(p => (
             <div key={p.$id}
-              className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-4">
+              className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 flex items-center gap-4">
               <Badge label={ESTADO_PUBLICACION_LABELS[p.estado]} variant={ESTADO_VARIANT[p.estado]} dot />
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-800 text-sm">{p.titulo}</p>
-                <p className="text-xs text-gray-400 truncate">{p.contenido}</p>
+                <p className="font-medium text-gray-800 dark:text-gray-100 text-sm">{p.titulo}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{p.contenido}</p>
               </div>
               <div className="flex gap-1 flex-shrink-0">
                 {p.redes.map(red => (
-                  <span key={red} className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full">
+                  <span key={red} className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full">
                     {RED_SOCIAL_LABELS[red as RedSocial]}
                   </span>
                 ))}
               </div>
               {p.fecha_publicacion && (
-                <span className="text-xs text-gray-400 flex-shrink-0">
+                <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
                   {format(parseISO(p.fecha_publicacion), 'd MMM', { locale: es })}
                 </span>
               )}
               <div className="flex gap-2">
                 <button onClick={() => setEditing(p)}
-                  className="text-xs px-2.5 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+                  className="text-xs px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
                   Editar
                 </button>
                 <button onClick={() => setDeleting(p)}
-                  className="text-xs px-2.5 py-1 rounded-md bg-red-50 hover:bg-red-100 text-red-600 transition-colors">
+                  className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
                   Eliminar
                 </button>
               </div>

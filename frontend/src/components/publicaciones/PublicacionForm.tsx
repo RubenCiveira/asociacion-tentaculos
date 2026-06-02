@@ -93,7 +93,7 @@ export function PublicacionForm({ initial, onSubmit, onCancel, loading, isEdit }
         <Textarea id="contenido" value={form.contenido} onChange={e => set('contenido', e.target.value)}
           error={!!errors.contenido} rows={6}
           placeholder="Escribe aquí el texto que irá en las redes sociales…" />
-        <div className="flex justify-between mt-1 text-xs text-gray-400">
+        <div className="flex justify-between mt-1 text-xs text-gray-400 dark:text-gray-500">
           <span>{charCount} caracteres</span>
           {activeLimit && (
             <span className={charCount > activeLimit ? 'text-red-500 font-medium' : ''}>
@@ -111,7 +111,7 @@ export function PublicacionForm({ initial, onSubmit, onCancel, loading, isEdit }
               className={`flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer text-sm transition-colors ${
                 form.redes.includes(red)
                   ? 'bg-brand-50 border-brand-300 text-brand-700'
-                  : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                  : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
               }`}>
               <input type="checkbox" className="sr-only"
                 checked={form.redes.includes(red)} onChange={() => toggleRed(red)} />
@@ -147,7 +147,7 @@ export function PublicacionForm({ initial, onSubmit, onCancel, loading, isEdit }
 
       <div className="flex justify-end gap-3 pt-2">
         <button type="button" onClick={onCancel} disabled={loading}
-          className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50">
+          className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50">
           Cancelar
         </button>
         <button type="submit" disabled={loading}
