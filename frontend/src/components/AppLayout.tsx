@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Users, Package, Archive, MapPin,
-  CalendarDays, Megaphone, LogOut, Menu, X,
+  CalendarDays, Megaphone, ShieldCheck, LogOut, Menu, X,
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
@@ -25,6 +25,7 @@ export default function AppLayout() {
     { to: '/lugares',                 label: 'Lugares',               icon: MapPin,          show: admin },
     { to: '/eventos',                 label: 'Eventos',               icon: CalendarDays,    show: canContent },
     { to: '/publicaciones',           label: 'Publicaciones',         icon: Megaphone,       show: canContent },
+    { to: '/accesos',                 label: 'Accesos',               icon: ShieldCheck,     show: admin },
   ].filter(i => i.show)
 
   async function handleLogout() {

@@ -16,9 +16,15 @@ type FormData = {
   activo: boolean
 }
 
+type SocioFormOutput = Omit<FormData, 'email' | 'telefono' | 'notas'> & {
+  email: string | null
+  telefono: string | null
+  notas: string | null
+}
+
 interface SocioFormProps {
   initial?: Partial<Socio>
-  onSubmit: (data: FormData) => void
+  onSubmit: (data: SocioFormOutput) => void
   onCancel: () => void
   loading?: boolean
   isEdit?: boolean
@@ -54,7 +60,15 @@ export function SocioForm({ initial, onSubmit, onCancel, loading, isEdit }: Soci
 
   function handleSubmit(ev: React.FormEvent) {
     ev.preventDefault()
-    if (validate()) onSubmit(form)
+    if (!validate()) return
+    // Convertir strings vacíos a null para campos opcionales con formato
+    // (Appwrite valida el formato de email/string aunque el campo sea opcional)
+    onSubmit({
+      ...form,
+      email:    form.email.trim()    || null,
+      telefono: form.telefono.trim() || null,
+      notas:    form.notas.trim()    || null,
+    })
   }
 
   return (
