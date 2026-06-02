@@ -9,6 +9,8 @@ import { Dialog } from '@/components/ui/Dialog'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { PublicacionForm } from '@/components/publicaciones/PublicacionForm'
 import { usePublicaciones, useCreatePublicacion, useUpdatePublicacion, useDeletePublicacion } from '@/hooks/usePublicaciones'
+import { useAuth } from '@/contexts/AuthContext'
+import { canWritePublicaciones } from '@/lib/roles'
 import { RED_SOCIAL_LABELS, ESTADO_PUBLICACION_LABELS } from '@/types'
 import type { Publicacion, EstadoPublicacion, RedSocial } from '@/types'
 import type { BadgeVariant } from '@/components/ui/Badge'
@@ -21,10 +23,11 @@ const ESTADO_VARIANT: Record<EstadoPublicacion, BadgeVariant> = {
 
 const ESTADOS: EstadoPublicacion[] = ['borrador', 'listo', 'publicado']
 
-function PublicacionCard({ pub, onEdit, onDelete }: {
+function PublicacionCard({ pub, onEdit, onDelete, canWrite }: {
   pub: Publicacion
   onEdit: () => void
   onDelete: () => void
+  canWrite: boolean
 }) {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 flex flex-col gap-3">
@@ -45,21 +48,25 @@ function PublicacionCard({ pub, onEdit, onDelete }: {
           {format(parseISO(pub.fecha_publicacion), 'd MMM yyyy', { locale: es })}
         </p>
       )}
-      <div className="flex gap-2 pt-2 border-t border-gray-50 dark:border-gray-800">
-        <button onClick={onEdit}
-          className="text-xs px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
-          Editar
-        </button>
-        <button onClick={onDelete}
-          className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
-          Eliminar
-        </button>
-      </div>
+      {canWrite && (
+        <div className="flex gap-2 pt-2 border-t border-gray-50 dark:border-gray-800">
+          <button onClick={onEdit}
+            className="text-xs px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
+            Editar
+          </button>
+          <button onClick={onDelete}
+            className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
+            Eliminar
+          </button>
+        </div>
+      )}
     </div>
   )
 }
 
 export default function PublicacionesPage() {
+  const { user } = useAuth()
+  const canWrite = canWritePublicaciones(user)
   const [search, setSearch] = useState('')
   const [view, setView] = useState<'kanban' | 'lista'>('kanban')
   const [filterRed, setFilterRed] = useState<RedSocial | ''>('')
@@ -122,11 +129,13 @@ export default function PublicacionesPage() {
               <List size={16} />
             </button>
           </div>
-          <button onClick={() => setCreating(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg transition-colors">
-            <Megaphone size={16} />
-            Nueva publicación
-          </button>
+          {canWrite && (
+            <button onClick={() => setCreating(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg transition-colors">
+              <Megaphone size={16} />
+              Nueva publicación
+            </button>
+          )}
         </div>
       </div>
 
@@ -143,8 +152,8 @@ export default function PublicacionesPage() {
 
       {filtered.length === 0 ? (
         <EmptyState icon={Megaphone} title="Sin publicaciones"
-          description="Crea publicaciones para preparar el contenido de las redes sociales"
-          action={{ label: 'Nueva publicación', onClick: () => setCreating(true) }} />
+          description="No hay publicaciones registradas"
+          action={canWrite ? { label: 'Nueva publicación', onClick: () => setCreating(true) } : undefined} />
       ) : view === 'kanban' ? (
         /* Kanban */
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -163,7 +172,8 @@ export default function PublicacionesPage() {
                   byEstado[estado].map(p => (
                     <PublicacionCard key={p.$id} pub={p}
                       onEdit={() => setEditing(p)}
-                      onDelete={() => setDeleting(p)} />
+                      onDelete={() => setDeleting(p)}
+                      canWrite={canWrite} />
                   ))
                 )}
               </div>
@@ -193,7 +203,7 @@ export default function PublicacionesPage() {
                   {format(parseISO(p.fecha_publicacion), 'd MMM', { locale: es })}
                 </span>
               )}
-              <div className="flex gap-2">
+              {canWrite && <div className="flex gap-2">
                 <button onClick={() => setEditing(p)}
                   className="text-xs px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
                   Editar
@@ -202,7 +212,7 @@ export default function PublicacionesPage() {
                   className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
                   Eliminar
                 </button>
-              </div>
+              </div>}
             </div>
           ))}
         </div>

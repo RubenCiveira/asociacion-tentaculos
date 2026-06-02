@@ -11,6 +11,8 @@ import { MiniCalendario } from '@/components/eventos/MiniCalendario'
 import { EventoForm } from '@/components/eventos/EventoForm'
 import { useEventos, useCreateEvento, useUpdateEvento, useDeleteEvento } from '@/hooks/useEventos'
 import { useLugares } from '@/hooks/useLugares'
+import { useAuth } from '@/contexts/AuthContext'
+import { canWriteEventos } from '@/lib/roles'
 import { TIPO_JUEGO_LABELS, ESTADO_EVENTO_LABELS } from '@/types'
 import type { Evento, TipoJuego, EstadoEvento } from '@/types'
 import type { BadgeVariant } from '@/components/ui/Badge'
@@ -24,6 +26,8 @@ const ESTADO_VARIANT: Record<EstadoEvento, BadgeVariant> = {
 
 export default function EventosPage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const canWrite = canWriteEventos(user)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [filterEstado, setFilterEstado] = useState<EstadoEvento | ''>('')
   const [filterTipo, setFilterTipo] = useState<TipoJuego | ''>('')
@@ -62,11 +66,13 @@ export default function EventosPage() {
             {data ? `${data.total} eventos registrados` : 'Cargando…'}
           </p>
         </div>
-        <button onClick={() => setCreating(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg transition-colors">
-          <CalendarPlus size={16} />
-          Nuevo evento
-        </button>
+        {canWrite && (
+          <button onClick={() => setCreating(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg transition-colors">
+            <CalendarPlus size={16} />
+            Nuevo evento
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
@@ -109,8 +115,8 @@ export default function EventosPage() {
             </div>
           ) : filtered.length === 0 ? (
             <EmptyState icon={CalendarDays} title="Sin eventos"
-              description={selectedDate ? `No hay eventos el ${format(selectedDate, 'd MMMM', { locale: es })}` : 'Crea el primer evento de la asociación'}
-              action={{ label: 'Nuevo evento', onClick: () => setCreating(true) }} />
+              description={selectedDate ? `No hay eventos el ${format(selectedDate, 'd MMMM', { locale: es })}` : 'No hay eventos registrados'}
+              action={canWrite ? { label: 'Nuevo evento', onClick: () => setCreating(true) } : undefined} />
           ) : (
             <div className="space-y-3">
               {filtered.map(evento => (
@@ -146,16 +152,18 @@ export default function EventosPage() {
                   {evento.descripcion && (
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 line-clamp-2">{evento.descripcion}</p>
                   )}
-                  <div className="flex gap-2 mt-3 pt-3 border-t border-gray-50 dark:border-gray-800" onClick={e => e.stopPropagation()}>
-                    <button onClick={() => setEditing(evento)}
-                      className="text-xs px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
-                      Editar
-                    </button>
-                    <button onClick={() => setDeleting(evento)}
-                      className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
-                      Eliminar
-                    </button>
-                  </div>
+                  {canWrite && (
+                    <div className="flex gap-2 mt-3 pt-3 border-t border-gray-50 dark:border-gray-800" onClick={e => e.stopPropagation()}>
+                      <button onClick={() => setEditing(evento)}
+                        className="text-xs px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
+                        Editar
+                      </button>
+                      <button onClick={() => setDeleting(evento)}
+                        className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
+                        Eliminar
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

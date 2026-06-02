@@ -9,6 +9,8 @@ import { EventoForm } from '@/components/eventos/EventoForm'
 import { useEvento, useUpdateEvento } from '@/hooks/useEventos'
 import { useLugares } from '@/hooks/useLugares'
 import { useSocios } from '@/hooks/useSocios'
+import { useAuth } from '@/contexts/AuthContext'
+import { canWriteEventos } from '@/lib/roles'
 import { TIPO_JUEGO_LABELS, ESTADO_EVENTO_LABELS } from '@/types'
 import type { EstadoEvento } from '@/types'
 import type { BadgeVariant } from '@/components/ui/Badge'
@@ -25,6 +27,8 @@ export default function EventoDetailPage() {
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
 
+  const { user } = useAuth()
+  const canWrite = canWriteEventos(user)
   const { data: evento, isLoading } = useEvento(id!)
   const { data: lugaresData } = useLugares()
   const { data: sociosData } = useSocios()
@@ -69,11 +73,11 @@ export default function EventoDetailPage() {
           </div>
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{evento.titulo}</h2>
         </div>
-        <button onClick={() => setEditing(true)}
+        {canWrite && <button onClick={() => setEditing(true)}
           className="flex items-center gap-2 px-3.5 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors">
           <Pencil size={14} />
           Editar
-        </button>
+        </button>}
       </div>
 
       {/* Info principal */}

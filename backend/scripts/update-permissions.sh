@@ -6,9 +6,11 @@
 # Por tanto no hace falta añadir su label en colecciones donde socio ya lee.
 #
 # Labels (solo alfanuméricos — restricción de Appwrite 1.8):
-#   socio           → lee eventos, publicaciones, lugares, materiales
-#   gestorMaterial  → idem + lee socios + escribe en materiales
-#   admin           → acceso total
+#   socio                → lee eventos, publicaciones, lugares, materiales
+#   gestorMaterial       → idem + lee socios + escribe en materiales
+#   gestorEventos        → idem + escribe en eventos
+#   gestorPublicaciones  → idem + escribe en publicaciones
+#   admin                → acceso total
 #
 # Uso: bash backend/scripts/update-permissions.sh
 # =============================================================================
@@ -76,39 +78,56 @@ run appwrite databases update-collection \
     'delete("label:gestorMaterial")'
 
 # ---------------------------------------------------------------------------
-# lugares, eventos, publicaciones: lee socio+admin; escribe solo admin
-# ---------------------------------------------------------------------------
-for col_id in lugares eventos publicaciones; do
-  case "$col_id" in
-    lugares)      col_name="Lugares" ;;
-    eventos)      col_name="Eventos" ;;
-    publicaciones) col_name="Publicaciones" ;;
-  esac
-  step "${col_id} — lee: admin+socio | escribe: admin"
-  run appwrite databases update-collection \
-    --database-id "$DB" --collection-id "$col_id" --name "$col_name" \
-    --permissions \
-      'read("label:admin")' \
-      'read("label:socio")' \
-      'create("label:admin")' \
-      'update("label:admin")' \
-      'delete("label:admin")'
-done
+step "lugares — lee: admin+socio | escribe: admin"
+run appwrite databases update-collection \
+  --database-id "$DB" --collection-id lugares --name "Lugares" \
+  --permissions \
+    'read("label:admin")' \
+    'read("label:socio")' \
+    'create("label:admin")' \
+    'update("label:admin")' \
+    'delete("label:admin")'
+
+step "eventos — lee: admin+socio | escribe: admin+gestorEventos"
+run appwrite databases update-collection \
+  --database-id "$DB" --collection-id eventos --name "Eventos" \
+  --permissions \
+    'read("label:admin")' \
+    'read("label:socio")' \
+    'create("label:admin")' \
+    'create("label:gestorEventos")' \
+    'update("label:admin")' \
+    'update("label:gestorEventos")' \
+    'delete("label:admin")' \
+    'delete("label:gestorEventos")'
+
+step "publicaciones — lee: admin+socio | escribe: admin+gestorPublicaciones"
+run appwrite databases update-collection \
+  --database-id "$DB" --collection-id publicaciones --name "Publicaciones" \
+  --permissions \
+    'read("label:admin")' \
+    'read("label:socio")' \
+    'create("label:admin")' \
+    'create("label:gestorPublicaciones")' \
+    'update("label:admin")' \
+    'update("label:gestorPublicaciones")' \
+    'delete("label:admin")' \
+    'delete("label:gestorPublicaciones")'
 
 # ---------------------------------------------------------------------------
 echo -e "\n${GREEN}✅ Permisos actualizados.${NC}"
 cat <<'SUMMARY'
 
   Tabla de acceso:
-  ┌──────────────────────┬──────────┬────────────────┬─────────────────┐
-  │ Colección            │ socio    │ gestorMaterial │ admin           │
-  ├──────────────────────┼──────────┼────────────────┼─────────────────┤
-  │ socios               │ —        │ lectura        │ lectura+escrit. │
-  │ materiales_socio     │ lectura  │ lect.+escrit.  │ lectura+escrit. │
-  │ materiales_asociacion│ lectura  │ lect.+escrit.  │ lectura+escrit. │
-  │ lugares              │ lectura  │ (via socio)    │ lectura+escrit. │
-  │ eventos              │ lectura  │ (via socio)    │ lectura+escrit. │
-  │ publicaciones        │ lectura  │ (via socio)    │ lectura+escrit. │
-  └──────────────────────┴──────────┴────────────────┴─────────────────┘
+  ┌──────────────────────┬─────────┬────────────────┬──────────────────┬──────────────────────┬─────────────────┐
+  │ Colección            │ socio   │ gestorMaterial │ gestorEventos    │ gestorPublicaciones  │ admin           │
+  ├──────────────────────┼─────────┼────────────────┼──────────────────┼──────────────────────┼─────────────────┤
+  │ socios               │ —       │ lectura        │ (via socio)      │ (via socio)          │ lectura+escrit. │
+  │ materiales_socio     │ lectura │ lect.+escrit.  │ (via socio)      │ (via socio)          │ lectura+escrit. │
+  │ materiales_asociacion│ lectura │ lect.+escrit.  │ (via socio)      │ (via socio)          │ lectura+escrit. │
+  │ lugares              │ lectura │ (via socio)    │ (via socio)      │ (via socio)          │ lectura+escrit. │
+  │ eventos              │ lectura │ (via socio)    │ lect.+escrit.    │ (via socio)          │ lectura+escrit. │
+  │ publicaciones        │ lectura │ (via socio)    │ (via socio)      │ lect.+escrit.        │ lectura+escrit. │
+  └──────────────────────┴─────────┴────────────────┴──────────────────┴──────────────────────┴─────────────────┘
 
 SUMMARY
