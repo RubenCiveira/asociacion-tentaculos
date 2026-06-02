@@ -12,6 +12,9 @@ function buildClient() {
 
 export default async ({ req, res, log, error }) => {
   const userId = req.headers['x-appwrite-user-id']
+  log(`[init] userId=${userId ?? '(sin sesión)'}`)
+  log(`[env] ENDPOINT=${process.env.APPWRITE_FUNCTION_API_ENDPOINT} PROJECT=${process.env.APPWRITE_FUNCTION_PROJECT_ID} DB_ID=${DB_ID} API_KEY=${process.env.APPWRITE_API_KEY ? '***configurada***' : '(no configurada)'}`)
+
   if (!userId) return res.json({ error: 'No autenticado' }, 401)
 
   let body
@@ -20,6 +23,8 @@ export default async ({ req, res, log, error }) => {
   } catch {
     return res.json({ error: 'Body inválido' }, 400)
   }
+
+  log(`[body] ${JSON.stringify(body)}`)
 
   const { accion, evento_id: eventoId } = body
 
@@ -35,9 +40,12 @@ export default async ({ req, res, log, error }) => {
   // --- Verificar que el evento existe y es inscribible ---
   let evento
   try {
+    log(`[db] getDocument db=${DB_ID} col=eventos id=${eventoId}`)
     evento = await db.getDocument(DB_ID, 'eventos', eventoId)
-  } catch {
-    return res.json({ error: 'Evento no encontrado' }, 404)
+    log(`[db] evento encontrado: ${evento.$id} estado=${evento.estado}`)
+  } catch (err) {
+    error(`[db] fallo getDocument: ${err?.message ?? err} code=${err?.code} type=${err?.type}`)
+    return res.json({ error: 'Evento no encontrado', detail: err?.message }, 404)
   }
 
   if (accion === 'inscribirse') {
