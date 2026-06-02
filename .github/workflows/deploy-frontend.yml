@@ -33,9 +33,7 @@ jobs:
       - name: Build
         working-directory: frontend
         env:
-          # Repo name as base path, e.g. /asociacion-tentaculos/
-          # Set this secret in GitHub → Settings → Secrets → Actions
-          VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || '/' }}
+          VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || format('/{0}/', github.event.repository.name) }}
           VITE_APPWRITE_ENDPOINT: ${{ vars.VITE_APPWRITE_ENDPOINT }}
           VITE_APPWRITE_PROJECT_ID: ${{ vars.VITE_APPWRITE_PROJECT_ID }}
         run: npm run build
