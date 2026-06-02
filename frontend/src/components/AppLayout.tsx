@@ -1,25 +1,31 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
-  LayoutDashboard, Users, Package, Archive, MapPin, CalendarDays, Megaphone, LogOut, Menu, X,
+  LayoutDashboard, Users, Package, Archive, MapPin,
+  CalendarDays, Megaphone, LogOut, Menu, X,
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { canManageMateriales, canReadContent, isAdmin } from '@/lib/roles'
 import { cn } from '@/lib/utils'
-
-const NAV_ITEMS = [
-  { to: '/',                        label: 'Inicio',                icon: LayoutDashboard },
-  { to: '/socios',                  label: 'Socios',                icon: Users },
-  { to: '/materiales/socios',       label: 'Materiales socios',     icon: Package },
-  { to: '/materiales/asociacion',   label: 'Materiales asociación', icon: Archive },
-  { to: '/lugares',                 label: 'Lugares',               icon: MapPin },
-  { to: '/eventos',                 label: 'Eventos',               icon: CalendarDays },
-  { to: '/publicaciones',           label: 'Publicaciones',         icon: Megaphone },
-]
 
 export default function AppLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+
+  const admin       = isAdmin(user)
+  const gestor      = canManageMateriales(user)
+  const canContent  = canReadContent(user)
+
+  const NAV_ITEMS = [
+    { to: '/',                       label: 'Inicio',                icon: LayoutDashboard, show: true },
+    { to: '/socios',                  label: 'Socios',                icon: Users,           show: gestor },
+    { to: '/materiales/socios',       label: 'Materiales socios',     icon: Package,         show: gestor },
+    { to: '/materiales/asociacion',   label: 'Materiales asociación', icon: Archive,         show: gestor },
+    { to: '/lugares',                 label: 'Lugares',               icon: MapPin,          show: admin },
+    { to: '/eventos',                 label: 'Eventos',               icon: CalendarDays,    show: canContent },
+    { to: '/publicaciones',           label: 'Publicaciones',         icon: Megaphone,       show: canContent },
+  ].filter(i => i.show)
 
   async function handleLogout() {
     await logout()
@@ -57,7 +63,18 @@ export default function AppLayout() {
           <div className="w-7 h-7 rounded-full bg-brand-100 dark:bg-brand-900 flex items-center justify-center text-brand-700 dark:text-brand-300 text-xs font-bold">
             {user?.name?.[0]?.toUpperCase() ?? '?'}
           </div>
-          <span className="text-xs text-gray-600 dark:text-gray-400 truncate">{user?.name ?? user?.email}</span>
+          <div className="min-w-0">
+            <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{user?.name ?? user?.email}</p>
+            {user?.labels && user.labels.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-0.5">
+                {user.labels.map(l => (
+                  <span key={l} className="text-[10px] px-1.5 py-0 bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-full">
+                    {l}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <button
           onClick={handleLogout}
@@ -72,20 +89,16 @@ export default function AppLayout() {
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
-      {/* Sidebar desktop */}
       <aside className="hidden md:flex w-56 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 flex-shrink-0 flex-col">
         {sidebar}
       </aside>
 
-      {/* Mobile overlay */}
       {menuOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setMenuOpen(false)} />
           <aside className="relative w-56 h-full bg-white dark:bg-gray-900 shadow-xl flex flex-col">
-            <button
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-              onClick={() => setMenuOpen(false)}
-            >
+            <button className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              onClick={() => setMenuOpen(false)}>
               <X size={20} />
             </button>
             {sidebar}
@@ -93,9 +106,7 @@ export default function AppLayout() {
         </div>
       )}
 
-      {/* Main */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Mobile topbar */}
         <header className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
           <button onClick={() => setMenuOpen(true)} className="text-gray-500 dark:text-gray-400">
             <Menu size={22} />

@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom'
 import { format, parseISO, isFuture } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Users, Package, Archive, CalendarDays, Megaphone, MapPin, AlertTriangle } from 'lucide-react'
+import { useAuth } from '@/contexts/AuthContext'
+import { isAdmin, canManageMateriales, canReadContent } from '@/lib/roles'
 import { useSocios } from '@/hooks/useSocios'
 import { useMaterialesAsociacion } from '@/hooks/useMaterialesAsociacion'
 import { useEventos } from '@/hooks/useEventos'
@@ -45,20 +47,24 @@ function StatCard({ icon: Icon, label, value, sub, color, onClick }: {
 
 export default function DashboardPage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
 
-  const { data: sociosData } = useSocios({ soloActivos: true })
-  const { data: materialesData } = useMaterialesAsociacion()
-  const { data: eventosData } = useEventos()
+  const admin   = isAdmin(user)
+  const gestor  = canManageMateriales(user)
+  const content = canReadContent(user)
+
+  // Carga condicional según permisos
+  const { data: sociosData }      = useSocios({ soloActivos: true })
+  const { data: materialesData }  = useMaterialesAsociacion()
+  const { data: eventosData }     = useEventos()
   const { data: publicacionesData } = usePublicaciones()
 
-  const sociosActivos = sociosData?.total ?? 0
-
-  const materialesTotal = materialesData?.total ?? 0
+  const sociosActivos     = sociosData?.total ?? 0
+  const materialesTotal   = materialesData?.total ?? 0
   const materialesProblema = (materialesData?.documents ?? []).filter(
     m => m.estado === 'deteriorado' || m.estado === 'perdido',
   ).length
 
-  const ahora = new Date()
   const proximosEventos = (eventosData?.documents ?? [])
     .filter(e => isFuture(parseISO(e.fecha_inicio)) && e.estado !== 'cancelado')
     .sort((a, b) => a.fecha_inicio.localeCompare(b.fecha_inicio))
@@ -73,38 +79,69 @@ export default function DashboardPage() {
       <div>
         <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Panel de gestión</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-          {format(ahora, "EEEE, d 'de' MMMM yyyy", { locale: es })}
+          {format(new Date(), "EEEE, d 'de' MMMM yyyy", { locale: es })}
         </p>
       </div>
 
-      {/* Stats */}
+      {/* Stats según rol */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <StatCard
-          icon={Users} label="Socios activos" value={sociosActivos}
-          color="bg-brand-50 text-brand-600"
-          onClick={() => navigate('/socios')}
-        />
-        <StatCard
-          icon={Archive} label="Materiales de la asociación" value={materialesTotal}
-          sub={materialesProblema > 0 ? `${materialesProblema} con incidencias` : 'Todo en orden'}
-          color={materialesProblema > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}
-          onClick={() => navigate('/materiales/asociacion')}
-        />
-        <StatCard
-          icon={CalendarDays} label="Próximos eventos" value={proximosEventos.length}
-          color="bg-purple-50 text-purple-600"
-          onClick={() => navigate('/eventos')}
-        />
-        <StatCard
-          icon={Megaphone} label="Publicaciones listas" value={publicacionesListas}
-          sub={publicacionesListas > 0 ? 'Pendientes de publicar' : 'Sin contenido pendiente'}
-          color={publicacionesListas > 0 ? 'bg-yellow-50 text-yellow-600' : 'bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500'}
-          onClick={() => navigate('/publicaciones')}
-        />
+        {gestor && (
+          <StatCard
+            icon={Users} label="Socios activos" value={sociosActivos}
+            color="bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400"
+            onClick={() => navigate('/socios')}
+          />
+        )}
+        {gestor && (
+          <StatCard
+            icon={Archive} label="Materiales de la asociación" value={materialesTotal}
+            sub={materialesProblema > 0 ? `${materialesProblema} con incidencias` : 'Todo en orden'}
+            color={materialesProblema > 0
+              ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+              : 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400'}
+            onClick={() => navigate('/materiales/asociacion')}
+          />
+        )}
+        {content && (
+          <StatCard
+            icon={CalendarDays} label="Próximos eventos" value={proximosEventos.length}
+            color="bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+            onClick={() => navigate('/eventos')}
+          />
+        )}
+        {content && (
+          <StatCard
+            icon={Megaphone} label="Publicaciones listas" value={publicacionesListas}
+            sub={publicacionesListas > 0 ? 'Pendientes de publicar' : 'Sin contenido pendiente'}
+            color={publicacionesListas > 0
+              ? 'bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
+              : 'bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500'}
+            onClick={() => navigate('/publicaciones')}
+          />
+        )}
       </div>
 
-      {/* Próximo evento */}
-      {proximoEvento && (
+      {/* Alerta materiales — solo gestores */}
+      {gestor && materialesProblema > 0 && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 flex items-start gap-3">
+          <AlertTriangle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-red-700 dark:text-red-400">
+              {materialesProblema} material{materialesProblema > 1 ? 'es' : ''} con incidencias
+            </p>
+            <p className="text-xs text-red-600 dark:text-red-500 mt-0.5">
+              Materiales marcados como deteriorados o perdidos en el inventario.
+            </p>
+            <button onClick={() => navigate('/materiales/asociacion')}
+              className="text-xs text-red-700 dark:text-red-400 font-medium underline mt-1">
+              Revisar inventario →
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Próximo evento — solo si puede leer contenido */}
+      {content && proximoEvento && (
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5">
           <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4 flex items-center gap-2">
             <CalendarDays size={14} />
@@ -127,7 +164,7 @@ export default function DashboardPage() {
                   {proximoEvento.max_jugadores ? ` de ${proximoEvento.max_jugadores}` : ''}
                 </p>
               </div>
-              <div className="flex flex-col items-end gap-1.5">
+              <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                 <Badge label={ESTADO_EVENTO_LABELS[proximoEvento.estado]}
                   variant={ESTADO_VARIANT[proximoEvento.estado]} dot />
                 <Badge label={TIPO_JUEGO_LABELS[proximoEvento.tipo_juego]} variant="purple" />
@@ -137,47 +174,36 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Alertas */}
-      {materialesProblema > 0 && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 flex items-start gap-3">
-          <AlertTriangle size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-medium text-red-700 dark:text-red-400">
-              {materialesProblema} material{materialesProblema > 1 ? 'es' : ''} con incidencias
-            </p>
-            <p className="text-xs text-red-600 dark:text-red-400 mt-0.5">
-              Hay materiales marcados como deteriorados o perdidos en el inventario de la asociación.
-            </p>
-            <button
-              onClick={() => navigate('/materiales/asociacion')}
-              className="text-xs text-red-700 dark:text-red-400 font-medium underline mt-1"
-            >
-              Revisar inventario →
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Accesos rápidos — filtrados por rol */}
+      {(() => {
+        const items = [
+          { icon: Users,       label: 'Socios',             to: '/socios',                  color: 'text-brand-600 dark:text-brand-400',   show: gestor },
+          { icon: Package,     label: 'Mat. socios',        to: '/materiales/socios',        color: 'text-indigo-600 dark:text-indigo-400', show: gestor },
+          { icon: Archive,     label: 'Mat. asociación',    to: '/materiales/asociacion',    color: 'text-emerald-600 dark:text-emerald-400', show: gestor },
+          { icon: MapPin,      label: 'Lugares',            to: '/lugares',                  color: 'text-orange-600 dark:text-orange-400', show: admin },
+          { icon: CalendarDays, label: 'Eventos',           to: '/eventos',                  color: 'text-purple-600 dark:text-purple-400', show: content },
+          { icon: Megaphone,   label: 'Publicaciones',      to: '/publicaciones',            color: 'text-pink-600 dark:text-pink-400',     show: content },
+        ].filter(i => i.show)
 
-      {/* Accesos rápidos */}
-      <div>
-        <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Accesos rápidos</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {[
-            { icon: Users, label: 'Socios', to: '/socios', color: 'text-brand-600' },
-            { icon: Package, label: 'Mat. socios', to: '/materiales/socios', color: 'text-indigo-600' },
-            { icon: Archive, label: 'Mat. asociación', to: '/materiales/asociacion', color: 'text-emerald-600' },
-            { icon: MapPin, label: 'Lugares', to: '/lugares', color: 'text-orange-600' },
-            { icon: CalendarDays, label: 'Eventos', to: '/eventos', color: 'text-purple-600' },
-            { icon: Megaphone, label: 'Publicaciones', to: '/publicaciones', color: 'text-pink-600' },
-          ].map(({ icon: Icon, label, to, color }) => (
-            <button key={to} onClick={() => navigate(to)}
-              className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 flex items-center gap-3 hover:border-brand-200 dark:hover:border-brand-700 hover:shadow-sm transition-all text-left">
-              <Icon size={18} className={color} />
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+        if (items.length === 0) return null
+
+        return (
+          <div>
+            <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+              Accesos rápidos
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {items.map(({ icon: Icon, label, to, color }) => (
+                <button key={to} onClick={() => navigate(to)}
+                  className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 flex items-center gap-3 hover:border-brand-200 dark:hover:border-brand-700 hover:shadow-sm transition-all text-left">
+                  <Icon size={18} className={color} />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }
