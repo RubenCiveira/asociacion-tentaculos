@@ -54,6 +54,22 @@ export function useUpdateSocio() {
   })
 }
 
+/** Devuelve el socio vinculado al userId del usuario logueado, o null. */
+export function useMiSocio(userId: string | undefined) {
+  return useQuery({
+    queryKey: ['mi-socio', userId],
+    queryFn: async () => {
+      if (!userId) return null
+      const res = await databases.listDocuments<Socio>(
+        DB_ID, COLLECTIONS.SOCIOS,
+        [Query.equal('user_id', userId), Query.limit(1)],
+      )
+      return res.documents[0] ?? null
+    },
+    enabled: !!userId,
+  })
+}
+
 export function useDeleteSocio() {
   const qc = useQueryClient()
   const toast = useToast()

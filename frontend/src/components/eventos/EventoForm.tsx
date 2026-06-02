@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { FormField } from '@/components/ui/FormField'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
@@ -6,10 +6,8 @@ import { Select } from '@/components/ui/Select'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { ComboboxBuscable } from '@/components/ui/ComboboxBuscable'
 import { useLugares } from '@/hooks/useLugares'
-import { useSocios } from '@/hooks/useSocios'
 import { TIPO_JUEGO_LABELS, ESTADO_EVENTO_LABELS } from '@/types'
 import type { Evento, TipoJuego, EstadoEvento } from '@/types'
-import { Search, X } from 'lucide-react'
 
 type FormData = {
   titulo: string
@@ -19,7 +17,6 @@ type FormData = {
   lugar_id: string
   descripcion: string
   max_jugadores: string
-  asistentes: string[]
   estado: EstadoEvento
   notas: string
 }
@@ -41,39 +38,20 @@ export function EventoForm({ initial, onSubmit, onCancel, loading, isEdit }: Pro
     lugar_id: initial?.lugar_id ?? '',
     descripcion: initial?.descripcion ?? '',
     max_jugadores: initial?.max_jugadores?.toString() ?? '',
-    asistentes: initial?.asistentes ?? [],
     estado: initial?.estado ?? 'planificado',
     notas: initial?.notas ?? '',
   })
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
-  const [socioSearch, setSocioSearch] = useState('')
 
   const { data: lugaresData } = useLugares({ soloActivos: true })
-  const { data: sociosData } = useSocios({ soloActivos: true })
 
   const lugaresOptions = (lugaresData?.documents ?? []).map(l => ({
     value: l.$id, label: l.nombre,
   }))
 
-  const sociosFiltrados = useMemo(() => {
-    const q = socioSearch.toLowerCase()
-    return (sociosData?.documents ?? []).filter(s =>
-      !q || s.nombre.toLowerCase().includes(q) || s.apellidos.toLowerCase().includes(q),
-    )
-  }, [sociosData, socioSearch])
-
   function set<K extends keyof FormData>(key: K, value: FormData[K]) {
     setForm(f => ({ ...f, [key]: value }))
     setErrors(e => ({ ...e, [key]: undefined }))
-  }
-
-  function toggleAsistente(id: string) {
-    setForm(f => ({
-      ...f,
-      asistentes: f.asistentes.includes(id)
-        ? f.asistentes.filter(a => a !== id)
-        : [...f.asistentes, id],
-    }))
   }
 
   function validate() {
@@ -91,12 +69,6 @@ export function EventoForm({ initial, onSubmit, onCancel, loading, isEdit }: Pro
     const { max_jugadores, ...rest } = form
     onSubmit({ ...rest, max_jugadores: max_jugadores ? Number(max_jugadores) : undefined })
   }
-
-  const socioMap = useMemo(() => {
-    const m = new Map<string, string>()
-    sociosData?.documents.forEach(s => m.set(s.$id, `${s.nombre} ${s.apellidos}`))
-    return m
-  }, [sociosData])
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -148,48 +120,6 @@ export function EventoForm({ initial, onSubmit, onCancel, loading, isEdit }: Pro
       <FormField label="Descripción" htmlFor="desc">
         <Textarea id="desc" value={form.descripcion} onChange={e => set('descripcion', e.target.value)}
           placeholder="Información sobre la partida, escenario, requisitos…" rows={2} />
-      </FormField>
-
-      {/* Asistentes */}
-      <FormField label={`Asistentes (${form.asistentes.length} seleccionados)`}>
-        <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-          <div className="p-2 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2 bg-white dark:bg-gray-900">
-            <Search size={14} className="text-gray-400 dark:text-gray-500" />
-            <input value={socioSearch} onChange={e => setSocioSearch(e.target.value)}
-              placeholder="Buscar socios…"
-              className="text-sm outline-none flex-1 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 bg-transparent" />
-            {socioSearch && (
-              <button type="button" onClick={() => setSocioSearch('')}>
-                <X size={14} className="text-gray-400 dark:text-gray-500" />
-              </button>
-            )}
-          </div>
-          <div className="max-h-40 overflow-y-auto divide-y divide-gray-50 dark:divide-gray-800 bg-white dark:bg-gray-900">
-            {sociosFiltrados.length === 0 ? (
-              <p className="px-3 py-2 text-sm text-gray-400 dark:text-gray-500">Sin resultados</p>
-            ) : sociosFiltrados.map(s => (
-              <label key={s.$id} className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
-                <input type="checkbox" className="rounded"
-                  checked={form.asistentes.includes(s.$id)}
-                  onChange={() => toggleAsistente(s.$id)} />
-                <span className="text-sm text-gray-800 dark:text-gray-100">{s.apellidos}, {s.nombre}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-        {form.asistentes.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {form.asistentes.map(id => (
-              <span key={id}
-                className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-50 text-brand-700 rounded-full text-xs">
-                {socioMap.get(id) ?? id}
-                <button type="button" onClick={() => toggleAsistente(id)}>
-                  <X size={12} />
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
       </FormField>
 
       <FormField label="Notas" htmlFor="notas">

@@ -101,6 +101,17 @@ run appwrite databases update-collection \
     'delete("label:admin")' \
     'delete("label:gestorEventos")'
 
+step "participaciones — lee: admin+socio | create: solo Function (API key) | update/delete: admin+gestorEventos"
+run appwrite databases update-collection \
+  --database-id "$DB" --collection-id participaciones --name "Participaciones en eventos" \
+  --permissions \
+    'read("label:admin")' \
+    'read("label:socio")' \
+    'update("label:admin")' \
+    'update("label:gestorEventos")' \
+    'delete("label:admin")' \
+    'delete("label:gestorEventos")'
+
 step "publicaciones — lee: admin+socio | escribe: admin+gestorPublicaciones"
 run appwrite databases update-collection \
   --database-id "$DB" --collection-id publicaciones --name "Publicaciones" \
@@ -127,6 +138,7 @@ cat <<'SUMMARY'
   │ materiales_asociacion│ lectura │ lect.+escrit.  │ (via socio)      │ (via socio)          │ lectura+escrit. │
   │ lugares              │ lectura │ (via socio)    │ (via socio)      │ (via socio)          │ lectura+escrit. │
   │ eventos              │ lectura │ (via socio)    │ lect.+escrit.    │ (via socio)          │ lectura+escrit. │
+  │ participaciones      │ lectura │ (via socio)    │ lect.+upd/del    │ (via socio)          │ lectura+escrit. │
   │ publicaciones        │ lectura │ (via socio)    │ (via socio)      │ lect.+escrit.        │ lectura+escrit. │
   └──────────────────────┴─────────┴────────────────┴──────────────────┴──────────────────────┴─────────────────┘
 

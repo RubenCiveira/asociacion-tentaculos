@@ -178,6 +178,39 @@ async function createEventos() {
     db.createIndex(DB_ID, COL, 'idx_estado', 'key', ['estado']))
 }
 
+// --- Colección: participaciones ---
+async function createParticipaciones() {
+  const COL = 'participaciones'
+  // Solo lectura para socios; escritura exclusivamente vía Function con API key
+  const PERMS_READ_ONLY = [
+    Permission.read(Role.label('socio')),
+    Permission.read(Role.label('admin')),
+    Permission.update(Role.label('admin')),
+    Permission.update(Role.label('gestorEventos')),
+    Permission.delete(Role.label('admin')),
+    Permission.delete(Role.label('gestorEventos')),
+  ]
+  await ensure(`Colección: ${COL}`, () =>
+    db.createCollection(DB_ID, COL, 'Participaciones en eventos', PERMS_READ_ONLY, false))
+
+  await attr(() => db.createStringAttribute(DB_ID, COL, 'evento_id', 36, true))
+  await attr(() => db.createStringAttribute(DB_ID, COL, 'user_id', 36, true))
+  await attr(() => db.createStringAttribute(DB_ID, COL, 'socio_id', 36, false))
+  await attr(() => db.createStringAttribute(DB_ID, COL, 'nombre_display', 200, false))
+  await attr(() => db.createEnumAttribute(DB_ID, COL, 'estado', ['inscrito', 'retirado', 'rechazado'], true, 'inscrito'))
+  await attr(() => db.createStringAttribute(DB_ID, COL, 'motivo_rechazo', 500, false))
+
+  await sleep(1000)
+  await ensure(`Índice participaciones.evento_id`, () =>
+    db.createIndex(DB_ID, COL, 'idx_evento_id', 'key', ['evento_id']))
+  await ensure(`Índice participaciones.user_id`, () =>
+    db.createIndex(DB_ID, COL, 'idx_user_id', 'key', ['user_id']))
+  await ensure(`Índice participaciones.evento_user (unicidad lógica)`, () =>
+    db.createIndex(DB_ID, COL, 'idx_evento_user', 'key', ['evento_id', 'user_id']))
+  await ensure(`Índice participaciones.estado`, () =>
+    db.createIndex(DB_ID, COL, 'idx_estado', 'key', ['estado']))
+}
+
 // --- Colección: publicaciones ---
 async function createPublicaciones() {
   const COL = 'publicaciones'
@@ -224,6 +257,7 @@ async function main() {
   await createMaterialesAsociacion()
   await createLugares()
   await createEventos()
+  await createParticipaciones()
   await createPublicaciones()
   console.log('\nStorage:')
   await createStorage()

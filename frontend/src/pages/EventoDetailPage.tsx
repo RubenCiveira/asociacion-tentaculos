@@ -8,7 +8,7 @@ import { Dialog } from '@/components/ui/Dialog'
 import { EventoForm } from '@/components/eventos/EventoForm'
 import { useEvento, useUpdateEvento } from '@/hooks/useEventos'
 import { useLugares } from '@/hooks/useLugares'
-import { useSocios } from '@/hooks/useSocios'
+import { useParticipacionesEvento } from '@/hooks/useParticipaciones'
 import { useAuth } from '@/contexts/AuthContext'
 import { canWriteEventos } from '@/lib/roles'
 import { TIPO_JUEGO_LABELS, ESTADO_EVENTO_LABELS } from '@/types'
@@ -31,7 +31,7 @@ export default function EventoDetailPage() {
   const canWrite = canWriteEventos(user)
   const { data: evento, isLoading } = useEvento(id!)
   const { data: lugaresData } = useLugares()
-  const { data: sociosData } = useSocios()
+  const { data: participacionesData } = useParticipacionesEvento(id!)
   const updateMutation = useUpdateEvento()
 
   if (isLoading) return (
@@ -50,8 +50,7 @@ export default function EventoDetailPage() {
   )
 
   const lugar = lugaresData?.documents.find(l => l.$id === evento.lugar_id)
-  const socioMap = new Map(sociosData?.documents.map(s => [s.$id, `${s.nombre} ${s.apellidos}`]))
-  const asistentes = evento.asistentes.map(id => socioMap.get(id) ?? id)
+  const participaciones = participacionesData?.documents ?? []
 
   const duracion = evento.fecha_fin
     ? differenceInMinutes(parseISO(evento.fecha_fin), parseISO(evento.fecha_inicio))
@@ -98,7 +97,7 @@ export default function EventoDetailPage() {
         <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
           <Users size={15} className="text-gray-400 dark:text-gray-500" />
           <span>
-            {evento.asistentes.length} asistente{evento.asistentes.length !== 1 ? 's' : ''}
+            {participaciones.length} asistente{participaciones.length !== 1 ? 's' : ''}
             {evento.max_jugadores ? ` de ${evento.max_jugadores} máximo` : ''}
           </span>
         </div>
@@ -115,19 +114,25 @@ export default function EventoDetailPage() {
           <Users size={14} />
           Asistentes confirmados
         </h3>
-        {asistentes.length === 0 ? (
+        {participaciones.length === 0 ? (
           <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">Sin asistentes registrados</p>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {asistentes.map((nombre, i) => (
-              <div key={i}
-                className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-full">
-                <div className="w-5 h-5 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 text-xs font-bold">
-                  {nombre[0]}
+            {participaciones.map(p => {
+              const nombre = p.nombre_display ?? 'Usuario sin socio'
+              return (
+                <div key={p.$id}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 dark:bg-gray-800 rounded-full">
+                  <div className="w-5 h-5 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 text-xs font-bold">
+                    {nombre[0]}
+                  </div>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{nombre}</span>
+                  {p.estado === 'rechazado' && (
+                    <span className="text-xs text-red-400">(rechazado)</span>
+                  )}
                 </div>
-                <span className="text-sm text-gray-700 dark:text-gray-300">{nombre}</span>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

@@ -11,8 +11,9 @@ import { MiniCalendario } from '@/components/eventos/MiniCalendario'
 import { EventoForm } from '@/components/eventos/EventoForm'
 import { useEventos, useCreateEvento, useUpdateEvento, useDeleteEvento } from '@/hooks/useEventos'
 import { useLugares } from '@/hooks/useLugares'
+import { useMisParticipaciones, useConteosParticipaciones, useInscribirse, useRetirarse } from '@/hooks/useParticipaciones'
 import { useAuth } from '@/contexts/AuthContext'
-import { canWriteEventos } from '@/lib/roles'
+import { canWriteEventos, isSocio } from '@/lib/roles'
 import { TIPO_JUEGO_LABELS, ESTADO_EVENTO_LABELS } from '@/types'
 import type { Evento, TipoJuego, EstadoEvento } from '@/types'
 import type { BadgeVariant } from '@/components/ui/Badge'
@@ -28,6 +29,11 @@ export default function EventosPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const canWrite = canWriteEventos(user)
+  const canInscribirse = isSocio(user)
+  const { data: misParticipaciones } = useMisParticipaciones(user?.$id)
+  const { data: conteos } = useConteosParticipaciones()
+  const inscribirseMutation = useInscribirse()
+  const retiraseMutation = useRetirarse()
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [filterEstado, setFilterEstado] = useState<EstadoEvento | ''>('')
   const [filterTipo, setFilterTipo] = useState<TipoJuego | ''>('')
@@ -139,7 +145,7 @@ export default function EventosPage() {
                         )}
                         <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                           <Users size={12} />
-                          {evento.asistentes.length}
+                          {conteos?.get(evento.$id) ?? 0}
                           {evento.max_jugadores ? `/${evento.max_jugadores}` : ''} asistentes
                         </span>
                       </div>
@@ -152,16 +158,49 @@ export default function EventosPage() {
                   {evento.descripcion && (
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 line-clamp-2">{evento.descripcion}</p>
                   )}
-                  {canWrite && (
+                  {(canWrite || canInscribirse) && (
                     <div className="flex gap-2 mt-3 pt-3 border-t border-gray-50 dark:border-gray-800" onClick={e => e.stopPropagation()}>
-                      <button onClick={() => setEditing(evento)}
-                        className="text-xs px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
-                        Editar
-                      </button>
-                      <button onClick={() => setDeleting(evento)}
-                        className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
-                        Eliminar
-                      </button>
+                      {/* Apuntarse / desapuntarse */}
+                      {canInscribirse && evento.estado !== 'cancelado' && evento.estado !== 'realizado' && (() => {
+                        const miParticipacion = misParticipaciones?.find(p => p.evento_id === evento.$id)
+                        const inscrito = miParticipacion?.estado === 'inscrito'
+                        const rechazado = miParticipacion?.estado === 'rechazado'
+                        if (rechazado) return (
+                          <span className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400">
+                            Inscripción rechazada
+                          </span>
+                        )
+                        return inscrito ? (
+                          <button
+                            onClick={() => retiraseMutation.mutate(evento.$id)}
+                            disabled={retiraseMutation.isPending}
+                            className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors disabled:opacity-50"
+                          >
+                            Desapuntarme
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => inscribirseMutation.mutate(evento.$id)}
+                            disabled={inscribirseMutation.isPending}
+                            className="text-xs px-2.5 py-1 rounded-md bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 transition-colors disabled:opacity-50"
+                          >
+                            Apuntarme
+                          </button>
+                        )
+                      })()}
+                      {/* Editar / eliminar (gestores) */}
+                      {canWrite && (
+                        <>
+                          <button onClick={() => setEditing(evento)}
+                            className="text-xs px-2.5 py-1 rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
+                            Editar
+                          </button>
+                          <button onClick={() => setDeleting(evento)}
+                            className="text-xs px-2.5 py-1 rounded-md bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors">
+                            Eliminar
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>

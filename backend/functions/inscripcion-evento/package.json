@@ -1,0 +1,9 @@
+{
+  "name": "inscripcion-evento",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/main.mjs",
+  "dependencies": {
+    "node-appwrite": "^14.0.0"
+  }
+}

@@ -87,6 +87,17 @@ export const ESTADO_EVENTO_LABELS: Record<EstadoEvento, string> = {
   realizado: 'Realizado',
 }
 
+export type EstadoParticipacion = 'inscrito' | 'retirado' | 'rechazado'
+
+export interface Participacion extends Models.Document {
+  evento_id: string
+  user_id: string
+  socio_id?: string | null
+  nombre_display?: string | null
+  estado: EstadoParticipacion
+  motivo_rechazo?: string | null
+}
+
 export interface Evento extends Models.Document {
   titulo: string
   tipo_juego: TipoJuego

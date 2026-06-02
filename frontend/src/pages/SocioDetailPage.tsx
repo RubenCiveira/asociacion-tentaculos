@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { isAdmin } from '@/lib/roles'
 import { useMaterialesSocio } from '@/hooks/useMaterialesSocio'
 import { useEventos } from '@/hooks/useEventos'
+import { useParticipacionesSocio } from '@/hooks/useParticipaciones'
 import { TIPO_MATERIAL_LABELS, TIPO_JUEGO_LABELS, ESTADO_EVENTO_LABELS } from '@/types'
 import type { BadgeVariant } from '@/components/ui/Badge'
 import type { EstadoEvento } from '@/types'
@@ -45,6 +46,7 @@ export default function SocioDetailPage() {
   const { data: socio, isLoading } = useSocio(id!)
   const { data: materialesData } = useMaterialesSocio({ socioId: id })
   const { data: eventosData } = useEventos()
+  const { data: participaciones } = useParticipacionesSocio(id)
   const updateMutation = useUpdateSocio()
 
   if (isLoading) {
@@ -68,9 +70,8 @@ export default function SocioDetailPage() {
 
   const edad = differenceInYears(new Date(), parseISO(socio.fecha_nacimiento))
   const materiales = materialesData?.documents ?? []
-  const eventosDelSocio = (eventosData?.documents ?? []).filter(e =>
-    e.asistentes.includes(id!),
-  )
+  const eventoIds = new Set((participaciones ?? []).map(p => p.evento_id))
+  const eventosDelSocio = (eventosData?.documents ?? []).filter(e => eventoIds.has(e.$id))
 
   return (
     <div className="max-w-3xl space-y-6">

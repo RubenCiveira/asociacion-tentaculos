@@ -1,0 +1,852 @@
+{
+    "projectId": "6a1c8e6400066368d20b",
+    "projectName": "Asociación",
+    "settings": {
+        "services": {
+            "account": true,
+            "avatars": true,
+            "databases": true,
+            "locale": true,
+            "health": true,
+            "storage": true,
+            "teams": true,
+            "users": true,
+            "sites": true,
+            "functions": true,
+            "graphql": true,
+            "messaging": true
+        },
+        "auth": {
+            "methods": {
+                "jwt": true,
+                "phone": true,
+                "invites": true,
+                "anonymous": true,
+                "email-otp": true,
+                "magic-url": true,
+                "email-password": true
+            },
+            "security": {
+                "duration": 31536000,
+                "limit": 0,
+                "sessionsLimit": 10,
+                "passwordHistory": 0,
+                "passwordDictionary": false,
+                "personalDataCheck": false,
+                "sessionAlerts": false,
+                "mockNumbers": []
+            }
+        }
+    },
+    "tablesDB": [
+        {
+            "$id": "tentaculos",
+            "name": "Tentáculos",
+            "enabled": true
+        }
+    ],
+    "tables": [
+        {
+            "$id": "socios",
+            "$permissions": [
+                "read(\"label:admin\")",
+                "read(\"label:gestorMaterial\")",
+                "create(\"label:admin\")",
+                "update(\"label:admin\")",
+                "delete(\"label:admin\")"
+            ],
+            "databaseId": "tentaculos",
+            "name": "Socios",
+            "enabled": true,
+            "rowSecurity": true,
+            "columns": [
+                {
+                    "key": "nombre",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 100,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "apellidos",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 150,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "fecha_nacimiento",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "fecha_alta",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "activo",
+                    "type": "boolean",
+                    "required": true,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "email",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "format": "email",
+                    "default": null
+                },
+                {
+                    "key": "telefono",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "notas",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_activo",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "activo"
+                    ],
+                    "orders": []
+                },
+                {
+                    "key": "idx_apellidos",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "apellidos"
+                    ],
+                    "orders": []
+                },
+                {
+                    "key": "idx_nombre",
+                    "type": "fulltext",
+                    "status": "available",
+                    "columns": [
+                        "nombre"
+                    ],
+                    "orders": []
+                },
+                {
+                    "key": "idx_user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": []
+                }
+            ]
+        },
+        {
+            "$id": "materiales_socio",
+            "$permissions": [
+                "read(\"label:admin\")",
+                "read(\"label:socio\")",
+                "create(\"label:admin\")",
+                "create(\"label:gestorMaterial\")",
+                "update(\"label:admin\")",
+                "update(\"label:gestorMaterial\")",
+                "delete(\"label:admin\")",
+                "delete(\"label:gestorMaterial\")"
+            ],
+            "databaseId": "tentaculos",
+            "name": "Materiales de socios",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "socio_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "nombre",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "tipo",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "juego_mesa",
+                        "rol",
+                        "wargame",
+                        "accesorio",
+                        "otro"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "descripcion",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "prestado_asociacion",
+                    "type": "boolean",
+                    "required": true,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "notas",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_socio_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "socio_id"
+                    ],
+                    "orders": []
+                }
+            ]
+        },
+        {
+            "$id": "materiales_asociacion",
+            "$permissions": [
+                "read(\"label:admin\")",
+                "read(\"label:socio\")",
+                "create(\"label:admin\")",
+                "create(\"label:gestorMaterial\")",
+                "update(\"label:admin\")",
+                "update(\"label:gestorMaterial\")",
+                "delete(\"label:admin\")",
+                "delete(\"label:gestorMaterial\")"
+            ],
+            "databaseId": "tentaculos",
+            "name": "Materiales de la asociación",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "nombre",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "tipo",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "juego_mesa",
+                        "rol",
+                        "wargame",
+                        "accesorio",
+                        "otro"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "descripcion",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "estado",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "bueno",
+                        "deteriorado",
+                        "perdido"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "ubicacion",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "donado_por",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "fecha_adquisicion",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "notas",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_estado",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "estado"
+                    ],
+                    "orders": []
+                }
+            ]
+        },
+        {
+            "$id": "lugares",
+            "$permissions": [
+                "read(\"label:admin\")",
+                "read(\"label:socio\")",
+                "create(\"label:admin\")",
+                "update(\"label:admin\")",
+                "delete(\"label:admin\")"
+            ],
+            "databaseId": "tentaculos",
+            "name": "Lugares",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "nombre",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 150,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "direccion",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 300,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "tipo",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "local_propio",
+                        "bar",
+                        "biblioteca",
+                        "casa",
+                        "otro"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "capacidad",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "activo",
+                    "type": "boolean",
+                    "required": true,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "notas",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_activo",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "activo"
+                    ],
+                    "orders": []
+                }
+            ]
+        },
+        {
+            "$id": "eventos",
+            "$permissions": [
+                "read(\"label:admin\")",
+                "read(\"label:socio\")",
+                "create(\"label:admin\")",
+                "create(\"label:gestorEventos\")",
+                "update(\"label:admin\")",
+                "update(\"label:gestorEventos\")",
+                "update(\"label:socio\")",
+                "delete(\"label:admin\")",
+                "delete(\"label:gestorEventos\")"
+            ],
+            "databaseId": "tentaculos",
+            "name": "Eventos",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "titulo",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "tipo_juego",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "rol",
+                        "wargame",
+                        "eurogame",
+                        "party",
+                        "otro"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "fecha_inicio",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "fecha_fin",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "lugar_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "descripcion",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "max_jugadores",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": -9223372036854775808,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "asistentes",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "estado",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "planificado",
+                        "confirmado",
+                        "cancelado",
+                        "realizado"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "notas",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_fecha",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "fecha_inicio"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                },
+                {
+                    "key": "idx_estado",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "estado"
+                    ],
+                    "orders": []
+                }
+            ]
+        },
+        {
+            "$id": "participaciones",
+            "$permissions": [
+                "read(\"label:admin\")",
+                "read(\"label:socio\")",
+                "update(\"label:admin\")",
+                "update(\"label:gestorEventos\")",
+                "delete(\"label:admin\")",
+                "delete(\"label:gestorEventos\")"
+            ],
+            "databaseId": "tentaculos",
+            "name": "Participaciones en eventos",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "evento_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "socio_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "nombre_display",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "estado",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "elements": [
+                        "inscrito",
+                        "retirado",
+                        "rechazado"
+                    ],
+                    "format": "enum",
+                    "default": "inscrito"
+                },
+                {
+                    "key": "motivo_rechazo",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_evento_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["evento_id"],
+                    "orders": []
+                },
+                {
+                    "key": "idx_user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["user_id"],
+                    "orders": []
+                },
+                {
+                    "key": "idx_evento_user",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["evento_id", "user_id"],
+                    "orders": []
+                },
+                {
+                    "key": "idx_estado",
+                    "type": "key",
+                    "status": "available",
+                    "columns": ["estado"],
+                    "orders": []
+                }
+            ]
+        },
+        {
+            "$id": "publicaciones",
+            "$permissions": [
+                "read(\"label:admin\")",
+                "read(\"label:socio\")",
+                "create(\"label:admin\")",
+                "create(\"label:gestorPublicaciones\")",
+                "update(\"label:admin\")",
+                "update(\"label:gestorPublicaciones\")",
+                "delete(\"label:admin\")",
+                "delete(\"label:gestorPublicaciones\")"
+            ],
+            "databaseId": "tentaculos",
+            "name": "Publicaciones",
+            "enabled": true,
+            "rowSecurity": false,
+            "columns": [
+                {
+                    "key": "titulo",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "contenido",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 5000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "estado",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "borrador",
+                        "listo",
+                        "publicado"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "redes",
+                    "type": "string",
+                    "required": true,
+                    "array": true,
+                    "elements": [
+                        "instagram",
+                        "facebook",
+                        "twitter",
+                        "tiktok"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "fecha_publicacion",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "imagen_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "evento_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "notas",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_estado",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "estado"
+                    ],
+                    "orders": []
+                },
+                {
+                    "key": "idx_fecha",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "fecha_publicacion"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
+        }
+    ],
+    "functions": [
+        {
+            "$id": "inscripcion-evento",
+            "name": "Inscripción en Eventos",
+            "runtime": "node-18.0",
+            "path": "functions/inscripcion-evento",
+            "entrypoint": "src/main.mjs",
+            "commands": "npm install",
+            "ignore": [".git", ".env", "node_modules", "build.sh"],
+            "execute": ["users"],
+            "events": [],
+            "schedule": "",
+            "timeout": 15,
+            "enabled": true,
+            "logging": true,
+            "scopes": ["databases.read", "databases.write"],
+            "vars": {
+                "DB_ID": "tentaculos"
+            }
+        }
+    ]
+}

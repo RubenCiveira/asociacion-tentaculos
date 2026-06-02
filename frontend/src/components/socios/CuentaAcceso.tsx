@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { ID } from 'appwrite'
+import { ID, Permission, Role } from 'appwrite'
 import { Link, UserCheck, UserX, Send, Unlink } from 'lucide-react'
-import { account } from '@/lib/appwrite'
-import { useUpdateSocio } from '@/hooks/useSocios'
+import { account, databases, DB_ID, COLLECTIONS } from '@/lib/appwrite'
+import { useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/contexts/ToastContext'
 import { Dialog } from '@/components/ui/Dialog'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
@@ -14,54 +14,72 @@ interface Props {
   socio: Socio
 }
 
+// Permisos de colección que siempre se mantienen en documentos de socios
+const SOCIOS_DOC_PERMS = (linkedUserId?: string | null) => [
+  Permission.read(Role.label('admin')),
+  Permission.read(Role.label('gestorMaterial')),
+  ...(linkedUserId ? [Permission.read(Role.user(linkedUserId))] : []),
+  Permission.update(Role.label('admin')),
+  Permission.delete(Role.label('admin')),
+]
+
 export function CuentaAcceso({ socio }: Props) {
   const toast = useToast()
-  const updateMutation = useUpdateSocio()
+  const qc = useQueryClient()
+  const [saving, setSaving] = useState(false)
 
   const [showAsociar, setShowAsociar] = useState(false)
   const [showDesasociar, setShowDesasociar] = useState(false)
   const [userId, setUserId] = useState('')
   const [sendingInvite, setSendingInvite] = useState(false)
 
+  async function updateSocio(data: Record<string, unknown>, perms: string[]) {
+    setSaving(true)
+    try {
+      await databases.updateDocument(DB_ID, COLLECTIONS.SOCIOS, socio.$id, data, perms)
+      qc.invalidateQueries({ queryKey: ['socios'] })
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const hasAccount = !!socio.user_id
 
   async function handleInvitar() {
-    if (!socio.email) {
-      toast.error('El socio no tiene email registrado')
-      return
-    }
+    if (!socio.email) { toast.error('El socio no tiene email registrado'); return }
     setSendingInvite(true)
     try {
       const newUserId = ID.unique()
       const base = (import.meta.env.VITE_BASE_PATH ?? '/').replace(/\/$/, '')
-      const redirectUrl = `${window.location.origin}${base}/#/`
-
-      await account.createMagicURLToken(newUserId, socio.email, redirectUrl)
-      await updateMutation.mutateAsync({ id: socio.$id, data: { user_id: newUserId } })
+      await account.createMagicURLToken(newUserId, socio.email, `${window.location.origin}${base}/#/`)
+      await updateSocio({ user_id: newUserId }, SOCIOS_DOC_PERMS(newUserId))
       toast.success(`Invitación enviada a ${socio.email}`)
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e)
-      toast.error(`Error al enviar invitación: ${msg}`)
+      toast.error(`Error al enviar invitación: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
       setSendingInvite(false)
     }
   }
 
-  function handleAsociar() {
+  async function handleAsociar() {
     if (!userId.trim()) return
-    updateMutation.mutate(
-      { id: socio.$id, data: { user_id: userId.trim() } },
-      {
-        onSuccess: () => { setShowAsociar(false); setUserId('') },
-      },
-    )
+    try {
+      await updateSocio({ user_id: userId.trim() }, SOCIOS_DOC_PERMS(userId.trim()))
+      toast.success('Cuenta asociada correctamente')
+      setShowAsociar(false); setUserId('')
+    } catch {
+      toast.error('Error al asociar la cuenta')
+    }
   }
 
-  function handleDesasociar() {
-    updateMutation.mutate(
-      { id: socio.$id, data: { user_id: null } },
-      { onSuccess: () => setShowDesasociar(false) },
-    )
+  async function handleDesasociar() {
+    try {
+      await updateSocio({ user_id: null }, SOCIOS_DOC_PERMS(null))
+      toast.success('Cuenta desasociada')
+      setShowDesasociar(false)
+    } catch {
+      toast.error('Error al desasociar la cuenta')
+    }
   }
 
   return (
@@ -166,10 +184,10 @@ export function CuentaAcceso({ socio }: Props) {
             </button>
             <button
               onClick={handleAsociar}
-              disabled={!userId.trim() || updateMutation.isPending}
+              disabled={!userId.trim() || saving}
               className="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors disabled:opacity-60"
             >
-              {updateMutation.isPending ? 'Guardando…' : 'Asociar'}
+              {saving ? 'Guardando…' : 'Asociar'}
             </button>
           </div>
         </div>
@@ -184,7 +202,7 @@ export function CuentaAcceso({ socio }: Props) {
         message="¿Seguro que quieres desvincular la cuenta de acceso de este socio? El usuario de Appwrite no se elimina."
         confirmLabel="Desasociar"
         danger
-        loading={updateMutation.isPending}
+        loading={saving}
       />
     </div>
   )
