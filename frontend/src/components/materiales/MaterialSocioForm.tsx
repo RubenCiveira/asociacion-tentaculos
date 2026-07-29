@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Select } from '@/components/ui/Select'
 import { Toggle } from '@/components/ui/Toggle'
 import { ComboboxBuscable } from '@/components/ui/ComboboxBuscable'
+import { JuegoBggSearch, type JuegoBggSeleccion } from '@/components/bgg/JuegoBggSearch'
 import { useSocios } from '@/hooks/useSocios'
 import { TIPO_MATERIAL_LABELS } from '@/types'
 import type { MaterialSocio, TipoMaterial } from '@/types'
@@ -16,6 +17,9 @@ type FormData = {
   descripcion: string
   prestado_asociacion: boolean
   notas: string
+  bgg_id: number | null
+  bgg_nombre: string | null
+  bgg_thumbnail: string | null
 }
 
 interface Props {
@@ -35,6 +39,9 @@ export function MaterialSocioForm({ initial, fixedSocioId, onSubmit, onCancel, l
     descripcion: initial?.descripcion ?? '',
     prestado_asociacion: initial?.prestado_asociacion ?? false,
     notas: initial?.notas ?? '',
+    bgg_id: initial?.bgg_id ?? null,
+    bgg_nombre: initial?.bgg_nombre ?? null,
+    bgg_thumbnail: initial?.bgg_thumbnail ?? null,
   })
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
 
@@ -80,6 +87,23 @@ export function MaterialSocioForm({ initial, fixedSocioId, onSubmit, onCancel, l
       <FormField label="Nombre del material" htmlFor="nombre" required error={errors.nombre}>
         <Input id="nombre" value={form.nombre} onChange={e => set('nombre', e.target.value)}
           error={!!errors.nombre} placeholder="Ej: Catan, Libro del Jugador D&D…" />
+      </FormField>
+
+      <FormField label="Juego (BGG)" hint="Opcional: vincula con BoardGameGeek">
+        <JuegoBggSearch
+          value={form.bgg_id && form.bgg_nombre
+            ? { bgg_id: form.bgg_id, bgg_nombre: form.bgg_nombre, bgg_thumbnail: form.bgg_thumbnail }
+            : null}
+          onChange={sel => setForm(f => ({
+            ...f,
+            bgg_id: sel?.bgg_id ?? null,
+            bgg_nombre: sel?.bgg_nombre ?? null,
+            bgg_thumbnail: sel?.bgg_thumbnail ?? null,
+          }))}
+          onSeleccion={(sel: JuegoBggSeleccion) => {
+            setForm(f => (f.nombre.trim() ? f : { ...f, nombre: sel.bgg_nombre }))
+          }}
+        />
       </FormField>
 
       <FormField label="Tipo" htmlFor="tipo">

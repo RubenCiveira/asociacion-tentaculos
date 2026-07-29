@@ -29,6 +29,9 @@ export interface MaterialSocio extends Models.Document {
   descripcion?: string
   prestado_asociacion: boolean
   notas?: string
+  bgg_id?: number | null
+  bgg_nombre?: string | null
+  bgg_thumbnail?: string | null
 }
 
 export type EstadoMaterial = 'bueno' | 'deteriorado' | 'perdido'
@@ -48,6 +51,9 @@ export interface MaterialAsociacion extends Models.Document {
   donado_por?: string
   fecha_adquisicion?: string
   notas?: string
+  bgg_id?: number | null
+  bgg_nombre?: string | null
+  bgg_thumbnail?: string | null
 }
 
 export type TipoLugar = 'local_propio' | 'bar' | 'biblioteca' | 'casa' | 'otro'
@@ -109,6 +115,9 @@ export interface Evento extends Models.Document {
   asistentes: string[]
   estado: EstadoEvento
   notas?: string
+  bgg_id?: number | null
+  bgg_nombre?: string | null
+  bgg_thumbnail?: string | null
 }
 
 export type RedSocial = 'instagram' | 'facebook' | 'twitter' | 'tiktok'
@@ -136,4 +145,39 @@ export interface Publicacion extends Models.Document {
   imagen_id?: string
   evento_id?: string
   notas?: string
+}
+
+/** Referencia a un juego de BoardGameGeek (campos desnormalizados). */
+export interface BggJuegoRef {
+  bgg_id: number
+  nombre: string
+  anio?: number | null
+  thumbnail?: string | null
+}
+
+export interface BggPerfil extends Models.Document {
+  user_id: string
+  socio_id?: string | null
+  nombre_display?: string | null
+  bgg_username: string
+  publicar_stats: boolean
+  fecha_ultima_sync?: string | null
+  partidas_count?: number | null
+}
+
+export interface BggPartida extends Models.Document {
+  user_id: string
+  socio_id?: string | null
+  nombre_display?: string | null
+  bgg_play_id: string
+  bgg_game_id: number
+  juego_nombre: string
+  fecha: string
+  cantidad?: number | null
+  duracion_min?: number | null
+  comentarios?: string | null
+}
+
+export function bggUrl(bggId: number) {
+  return `https://boardgamegeek.com/boardgame/${bggId}`
 }

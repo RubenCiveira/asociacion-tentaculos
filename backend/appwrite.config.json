@@ -250,6 +250,33 @@
                     "size": 500,
                     "default": null,
                     "encrypt": false
+                },
+                {
+                    "key": "bgg_id",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "bgg_nombre",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 250,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "bgg_thumbnail",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
                 }
             ],
             "indexes": [
@@ -355,6 +382,33 @@
                 },
                 {
                     "key": "notas",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "bgg_id",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "bgg_nombre",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 250,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "bgg_thumbnail",
                     "type": "string",
                     "required": false,
                     "array": false,
@@ -570,6 +624,33 @@
                 },
                 {
                     "key": "notas",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "bgg_id",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "bgg_nombre",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 250,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "bgg_thumbnail",
                     "type": "string",
                     "required": false,
                     "array": false,
@@ -826,6 +907,242 @@
                     ]
                 }
             ]
+        },
+        {
+            "$id": "bgg_perfiles",
+            "$permissions": [
+                "read(\"label:admin\")",
+                "update(\"label:admin\")",
+                "delete(\"label:admin\")"
+            ],
+            "databaseId": "tentaculos",
+            "name": "Perfiles BGG",
+            "enabled": true,
+            "rowSecurity": true,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "socio_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "nombre_display",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "bgg_username",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 100,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "publicar_stats",
+                    "type": "boolean",
+                    "required": true,
+                    "array": false,
+                    "default": null
+                },
+                {
+                    "key": "fecha_ultima_sync",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "partidas_count",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_user_id",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": []
+                },
+                {
+                    "key": "idx_bgg_username",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "bgg_username"
+                    ],
+                    "orders": []
+                }
+            ]
+        },
+        {
+            "$id": "bgg_partidas",
+            "$permissions": [
+                "read(\"label:admin\")",
+                "delete(\"label:admin\")"
+            ],
+            "databaseId": "tentaculos",
+            "name": "Partidas BGG",
+            "enabled": true,
+            "rowSecurity": true,
+            "columns": [
+                {
+                    "key": "user_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "socio_id",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 36,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "nombre_display",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 200,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "bgg_play_id",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 20,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "bgg_game_id",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "juego_nombre",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 250,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "fecha",
+                    "type": "datetime",
+                    "required": true,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "cantidad",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": 1
+                },
+                {
+                    "key": "duracion_min",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 9223372036854775807,
+                    "default": null
+                },
+                {
+                    "key": "comentarios",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_bgg_play_id",
+                    "type": "unique",
+                    "status": "available",
+                    "columns": [
+                        "bgg_play_id"
+                    ],
+                    "orders": []
+                },
+                {
+                    "key": "idx_user_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "user_id"
+                    ],
+                    "orders": []
+                },
+                {
+                    "key": "idx_bgg_game_id",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "bgg_game_id"
+                    ],
+                    "orders": []
+                },
+                {
+                    "key": "idx_fecha",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "fecha"
+                    ],
+                    "orders": [
+                        "DESC"
+                    ]
+                }
+            ]
         }
     ],
     "functions": [
@@ -841,6 +1158,25 @@
             "events": [],
             "schedule": "",
             "timeout": 15,
+            "enabled": true,
+            "logging": true,
+            "scopes": ["databases.read", "databases.write"],
+            "vars": {
+                "DB_ID": "tentaculos"
+            }
+        },
+        {
+            "$id": "bgg",
+            "name": "Integración BGG",
+            "runtime": "node-18.0",
+            "path": "functions/bgg",
+            "entrypoint": "src/main.mjs",
+            "commands": "npm install",
+            "ignore": [".git", ".env", "node_modules", "build.sh"],
+            "execute": ["users"],
+            "events": [],
+            "schedule": "",
+            "timeout": 60,
             "enabled": true,
             "logging": true,
             "scopes": ["databases.read", "databases.write"],

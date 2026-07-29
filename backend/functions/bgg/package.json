@@ -1,0 +1,10 @@
+{
+  "name": "bgg",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "dependencies": {
+    "node-appwrite": "^14.0.0",
+    "fast-xml-parser": "^4.4.0"
+  }
+}

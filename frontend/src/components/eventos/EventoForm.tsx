@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/Textarea'
 import { Select } from '@/components/ui/Select'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { ComboboxBuscable } from '@/components/ui/ComboboxBuscable'
+import { JuegoBggSearch, type JuegoBggSeleccion } from '@/components/bgg/JuegoBggSearch'
 import { useLugares } from '@/hooks/useLugares'
 import { TIPO_JUEGO_LABELS, ESTADO_EVENTO_LABELS } from '@/types'
 import type { Evento, TipoJuego, EstadoEvento } from '@/types'
@@ -19,6 +20,9 @@ type FormData = {
   max_jugadores: string
   estado: EstadoEvento
   notas: string
+  bgg_id: number | null
+  bgg_nombre: string | null
+  bgg_thumbnail: string | null
 }
 
 interface Props {
@@ -40,6 +44,9 @@ export function EventoForm({ initial, onSubmit, onCancel, loading, isEdit }: Pro
     max_jugadores: initial?.max_jugadores?.toString() ?? '',
     estado: initial?.estado ?? 'planificado',
     notas: initial?.notas ?? '',
+    bgg_id: initial?.bgg_id ?? null,
+    bgg_nombre: initial?.bgg_nombre ?? null,
+    bgg_thumbnail: initial?.bgg_thumbnail ?? null,
   })
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
 
@@ -75,6 +82,23 @@ export function EventoForm({ initial, onSubmit, onCancel, loading, isEdit }: Pro
       <FormField label="Título" htmlFor="titulo" required error={errors.titulo}>
         <Input id="titulo" value={form.titulo} onChange={e => set('titulo', e.target.value)}
           error={!!errors.titulo} placeholder="Ej: Partida de Catan, Campaña D&D…" />
+      </FormField>
+
+      <FormField label="Juego (BGG)" hint="Opcional: vincula con BoardGameGeek">
+        <JuegoBggSearch
+          value={form.bgg_id && form.bgg_nombre
+            ? { bgg_id: form.bgg_id, bgg_nombre: form.bgg_nombre, bgg_thumbnail: form.bgg_thumbnail }
+            : null}
+          onChange={sel => setForm(f => ({
+            ...f,
+            bgg_id: sel?.bgg_id ?? null,
+            bgg_nombre: sel?.bgg_nombre ?? null,
+            bgg_thumbnail: sel?.bgg_thumbnail ?? null,
+          }))}
+          onSeleccion={(sel: JuegoBggSeleccion) => {
+            setForm(f => (f.titulo.trim() ? f : { ...f, titulo: `Partida de ${sel.bgg_nombre}` }))
+          }}
+        />
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">

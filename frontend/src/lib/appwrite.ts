@@ -19,8 +19,11 @@ export const COLLECTIONS = {
   EVENTOS: 'eventos',
   PARTICIPACIONES: 'participaciones',
   PUBLICACIONES: 'publicaciones',
+  BGG_PERFILES: 'bgg_perfiles',
+  BGG_PARTIDAS: 'bgg_partidas',
 } as const
 
 export const FUNCTIONS = {
   INSCRIPCION_EVENTO: import.meta.env.VITE_FUNCTION_INSCRIPCION_EVENTO_ID as string,
+  BGG: import.meta.env.VITE_FUNCTION_BGG_ID as string,
 } as const

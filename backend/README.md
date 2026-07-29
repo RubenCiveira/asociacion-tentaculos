@@ -67,20 +67,22 @@ appwrite pull --config appwrite.config.json
 
 ---
 
-## Variable de entorno de la función (paso manual obligatorio)
+## Variables de entorno de las funciones (paso manual obligatorio)
 
-La función `inscripcion-evento` necesita una `APPWRITE_API_KEY` en runtime para poder leer y escribir en la base de datos. **Esta variable no está en `appwrite.config.json`** porque contiene un secreto y no debe estar en el repositorio.
+Las funciones `inscripcion-evento` y `bgg` necesitan una `APPWRITE_API_KEY` en runtime para poder leer y escribir en la base de datos. La función `bgg` necesita además un **`BGG_TOKEN`**: desde 2025 la XML API de BoardGameGeek exige registrar la aplicación y enviar el token en el header `Authorization` (ver `functions/bgg/README.md`; el registro se hace en [boardgamegeek.com/using_the_xml_api](https://boardgamegeek.com/using_the_xml_api)). **Estas variables no están en `appwrite.config.json`** porque contienen secretos y no deben estar en el repositorio.
 
-Después de cada primer despliegue de la función (o al crearla desde cero), añade la variable manualmente:
+Después de cada primer despliegue de la función (o al crearla desde cero), añade las variables manualmente:
 
 ### Opción A — Desde la consola web
 
 1. Abre `https://appwrite.civeira.net` → **Functions** → `inscripcion-evento`
 2. Ve a **Settings** → **Variables**
 3. Añade:
-   | Key | Value |
-   |-----|-------|
-   | `APPWRITE_API_KEY` | `<api-key con permisos databases.read + databases.write>` |
+   | Función | Key | Value |
+   |---------|-----|-------|
+   | `inscripcion-evento` | `APPWRITE_API_KEY` | `<api-key con permisos databases.read + databases.write>` |
+   | `bgg` | `APPWRITE_API_KEY` | `<api-key con permisos databases.read + databases.write>` |
+   | `bgg` | `BGG_TOKEN` | `<token obtenido al registrar la app en BGG>` |
 4. Guarda y redespliega la función para que tome efecto.
 
 ### Opción B — Con la CLI
@@ -102,9 +104,13 @@ appwrite functions createVariable \
 backend/
 ├── appwrite.config.json     # Esquema del proyecto (colecciones, funciones, permisos)
 ├── functions/
-│   └── inscripcion-evento/  # Función serverless: inscripción/retirada de eventos
+│   ├── inscripcion-evento/  # Función serverless: inscripción/retirada de eventos
+│   │   ├── src/main.mjs
+│   │   └── package.json
+│   └── bgg/                 # Función serverless: proxy BGG + sync de partidas
 │       ├── src/main.mjs
-│       └── package.json
+│       ├── package.json
+│       └── README.md        # Cómo obtener el BGG_TOKEN
 └── scripts/                 # Scripts de utilidad (init-db, user-report…)
 ```
 

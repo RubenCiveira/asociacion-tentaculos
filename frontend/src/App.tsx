@@ -15,6 +15,7 @@ import EventoDetailPage from '@/pages/EventoDetailPage'
 import PublicacionesPage from '@/pages/PublicacionesPage'
 import DashboardPage from '@/pages/DashboardPage'
 import AccesosPage from '@/pages/AccesosPage'
+import EstadisticasBggPage from '@/pages/EstadisticasBggPage'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 1000 * 60 * 5 } },
@@ -44,6 +45,7 @@ export default function App() {
               <Route path="/eventos" element={<EventosPage />} />
               <Route path="/eventos/:id" element={<EventoDetailPage />} />
               <Route path="/publicaciones" element={<PublicacionesPage />} />
+              <Route path="/estadisticas" element={<EstadisticasBggPage />} />
               <Route path="/accesos" element={<AccesosPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
